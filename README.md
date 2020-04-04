@@ -2,21 +2,40 @@
 
 Welcome! This guide details how to get your lamp up and running.
 
-## Step 1: connect the lamp to WiFi
+## Initial Setup (for the developer)
 
-1. ***With the lamp powered OFF,*** connect the MicroUSB port on the lamp to
-your computer.
+### Set up the Raspberry Pi Zero to emulate Ethernet over USB
 
-> :warning: add a picture here
+1. Mount the micro SD card and install Raspbian using `Raspberry Pi Imager`
 
-2. Wait about 60 seconds to allow the lamp microcontroller to boot up. As soon
-as this is complete, go to *System Preferences > Network*, and you should see
-the lantern listed as "RNDIS/Ethernet Gadget", as shown in the screenshot below:
+2. Add the following line to the bottom of `/Volumes/boot/config.txt`:
 
-![](screenshots/rpi_wifi_network.png)
+```
+dtoverlay=dwc2
+```
 
-3. Go to *System Preferences > Sharing* and enable Internet sharing for the
-lamp, as shown in the screenshot below:
+3. Add the following to `/Volumes/boot/cmdline.txt`, following the `rootwait`
+parameter:
 
-![](screenshots/rpi_wifi_sharing.png)
+```
+modules-load=dwc2,g_ether
+```
 
+4. Run `touch /Volumes/boot/ssh` to enable SSH access
+
+### Configure Raspbian
+
+Update the package lists and upgrade all out-of-date packages:
+
+```bash
+$ sudo apt-get -y update
+$ sudo apt-get -y upgrade
+```
+
+Install the required Qt libraries:
+
+```bash
+$ sudo apt-get install -y build-essential
+$ sudo apt-get install -y qt5-default
+$ sudo apt-get install -y qtconnectivity5-dev
+```
