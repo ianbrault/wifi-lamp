@@ -21,7 +21,7 @@ import textwrap
 _debug   = False
 base_dir = os.path.dirname(os.path.abspath(__file__))
 rpi_host = 'raspberrypi.local'
-rpi_pwd  = 'blueberries'
+rpi_pwd  = 'blueberry'
 idfile   = os.path.join(base_dir, 'rpi_id_rsa')
 wiface   = 'wlan0'
 
@@ -286,6 +286,11 @@ def main():
 if __name__ == '__main__':
     if '-d' in sys.argv or '--debug' in sys.argv:
         _debug = True
+
+    # FIXME: re-generate the SSH keys to support this script
+    print('ERROR: the SSH keys are not currently configured, this script will '
+          'fail to run')
+    sys.exit(1)
 
     main()
 
