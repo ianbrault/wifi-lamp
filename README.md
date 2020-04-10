@@ -39,3 +39,11 @@ $ sudo apt-get install -y build-essential
 $ sudo apt-get install -y qt5-default
 $ sudo apt-get install -y qtconnectivity5-dev
 ```
+
+### Configure Bluetooth (BlueZ)
+
+Edit `/etc/systemd/system/bluetooth.target.wants/bluetooth.service` and set
+`ExecStart=/usr/lib/bluetooth/bluetoothd --noplugin=sap`.
+
+Edit `/etc/bluetooth/main.conf` and set `ControllerMode = le` and
+`Privacy = off`
