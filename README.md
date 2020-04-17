@@ -32,9 +32,10 @@ $ sudo apt-get -y update
 $ sudo apt-get -y upgrade
 ```
 
-Install the required Qt libraries:
+Install `git` and the required Qt libraries:
 
 ```bash
+$ sudo apt-get install -y git
 $ sudo apt-get install -y build-essential
 $ sudo apt-get install -y qt5-default
 $ sudo apt-get install -y qtconnectivity5-dev
