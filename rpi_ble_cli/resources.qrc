@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file alias="rpi_bare.svg">resources/rpi_bare.svg</file>
+    <file alias="connected.svg">resources/connected.svg</file>
+    <file alias="disconnected.svg">resources/disconnected.svg</file>
+    <file alias="load.svg">resources/load.svg</file>
+</qresource>
+</RCC>
