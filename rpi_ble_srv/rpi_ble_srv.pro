@@ -6,9 +6,12 @@ CONFIG -= app_bundle
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
-HEADERS += uuid.hpp
+HEADERS += \
+        uuid.hpp \
+        connection_handler.hpp
 SOURCES += \
-        main.cpp
+        main.cpp \
+        connection_handler.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
