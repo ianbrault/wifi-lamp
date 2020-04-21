@@ -20,9 +20,11 @@ TopBanner::TopBanner(QWidget* parent)
     auto image = new QLabel();
     auto image_width = width / 8;
 
+    QPixmap image_icon(":/rpi_bare.svg");
+    image_icon.setDevicePixelRatio(3.0);
+
     image->setPixmap(
-        QPixmap(":/rpi_bare.svg")
-            .scaledToWidth(image_width, Qt::SmoothTransformation));
+        image_icon.scaledToWidth(image_width * 3.0, Qt::SmoothTransformation));
     image->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 
     auto line_width = (width - image_width) / 2;
