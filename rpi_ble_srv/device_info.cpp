@@ -92,7 +92,7 @@ const QByteArray DeviceInfo::mac_bytes() const
 {
     char mac_bytes[6];
     for (int i = 0; i < 6; i++)
-        mac_bytes[i] = std::stoi(m_mac.substr(i * 2, 2), nullptr, 16);
+        mac_bytes[i] = std::stoi(m_mac.substr(i * 3, 2), nullptr, 16);
 
     return QByteArray::fromRawData(mac_bytes, 6);
 }
