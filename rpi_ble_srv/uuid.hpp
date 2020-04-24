@@ -5,32 +5,21 @@
 #ifndef UUID_HPP
 #define UUID_HPP
 
-#include <QBluetoothUuid>
 #include <QString>
 
 const static QString BASE_UUID = "-dead-fade-cafe-204080160320";
-#define GET_UUID_STR(n) \
-    (((n < 0xf) ? "0000000" : "000000") + QString::number(n, 16) + BASE_UUID)
-#define GET_UUID(n) QBluetoothUuid(GET_UUID_STR(n))
+#define GET_UUID(s) (QString("0000") + s + BASE_UUID)
 
 // group all characteristics into this single service
-const auto SVC_UUID  = GET_UUID(1);
+const auto SVC_UUID = GET_UUID("0000");
 
-// BLE characteristics & descriptors
+// BLE characteristics
 
-const auto MAC_UUID     = GET_UUID(2);
-const auto MAC_DSC_UUID = GET_UUID(3);
-
-const auto NWK_STAT_UUID     = GET_UUID(4);
-const auto NWK_STAT_DSC_UUID = GET_UUID(5);
-
-const auto NWK_SSID_UUID     = GET_UUID(6);
-const auto NWK_SSID_DSC_UUID = GET_UUID(7);
-
-const auto NWK_PWD_UUID     = GET_UUID(8);
-const auto NWK_PWD_DSC_UUID = GET_UUID(9);
-
-const auto PTNR_UUID     = GET_UUID(10);
-const auto PTNR_DSC_UUID = GET_UUID(11);
+const auto DEV_MAC_UUID  = GET_UUID("0001");
+const auto DEV_NAME_UUID = GET_UUID("0002");
+const auto DEV_PAIR_UUID = GET_UUID("0003");
+const auto NWK_STAT_UUID = GET_UUID("0004");
+const auto NWK_SSID_UUID = GET_UUID("0005");
+const auto NWK_PWD_UUID  = GET_UUID("0006");
 
 #endif

@@ -2,10 +2,9 @@
 ** main.cpp
 */
 
-#include <QByteArray>
+#include <QBluetoothUuid>
 #include <QCoreApplication>
 #include <QDebug>
-#include <QList>
 #include <QLowEnergyAdvertisingData>
 #include <QLowEnergyAdvertisingParameters>
 #include <QLowEnergyCharacteristic>
@@ -30,17 +29,17 @@ int main(int argc, char *argv[])
     QLowEnergyAdvertisingData ad_data;
     ad_data.setDiscoverability(QLowEnergyAdvertisingData::DiscoverabilityGeneral);
     ad_data.setLocalName("LampSrv");
-    ad_data.setServices(QList<QBluetoothUuid>() << SVC_UUID);
+    ad_data.setServices(QList<QBluetoothUuid>() << QBluetoothUuid(SVC_UUID));
 
     /*
     ** define BLE characteristics
     */
 
     // define MAC address characteristic data
-    qDebug() << "Adding device MAC characteristic data";
+    qDebug() << "Adding device MAC characteristic data " << DEV_MAC_UUID;
 
     QLowEnergyCharacteristicData mac_char;
-    mac_char.setUuid(MAC_UUID);
+    mac_char.setUuid(QBluetoothUuid(DEV_MAC_UUID));
     mac_char.setValue(device_info.mac_bytes());
     mac_char.setValueLength(6, 6);
     mac_char.setProperties(QLowEnergyCharacteristic::Read);
@@ -48,11 +47,11 @@ int main(int argc, char *argv[])
     /*
     ** define BLE service
     */
-    qDebug() << "Creating BLE service";
+    qDebug() << "Creating BLE service " << SVC_UUID;
 
     QLowEnergyServiceData svc_data;
     svc_data.setType(QLowEnergyServiceData::ServiceTypePrimary);
-    svc_data.setUuid(SVC_UUID);
+    svc_data.setUuid(QBluetoothUuid(SVC_UUID));
 
     svc_data.addCharacteristic(mac_char);
 
