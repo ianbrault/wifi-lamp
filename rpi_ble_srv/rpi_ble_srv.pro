@@ -8,10 +8,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
         uuid.hpp \
-        connection_handler.hpp
+        connection_handler.hpp \
+        device_info.hpp
 SOURCES += \
         main.cpp \
-        connection_handler.cpp
+        connection_handler.cpp \
+        device_info.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

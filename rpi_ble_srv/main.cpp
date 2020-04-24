@@ -17,17 +17,14 @@
 #include <QScopedPointer>
 
 #include "connection_handler.hpp"
+#include "device_info.hpp"
 #include "uuid.hpp"
-
-static const char mac_addr[] = {
-    '\xfa', '\xde', '\xca', '\xfe', '\x42', '\x00'
-};
-
-#define MAC_ADDR QByteArray::fromRawData(mac_addr, 6)
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+
+    DeviceInfo device_info;
 
     // set up BLE advertising data
     QLowEnergyAdvertisingData ad_data;
@@ -44,8 +41,7 @@ int main(int argc, char *argv[])
 
     QLowEnergyCharacteristicData mac_char;
     mac_char.setUuid(MAC_UUID);
-    // TODO: need to retrieve the MAC address
-    mac_char.setValue(MAC_ADDR);
+    mac_char.setValue(device_info.mac_bytes());
     mac_char.setValueLength(6, 6);
     mac_char.setProperties(QLowEnergyCharacteristic::Read);
 
