@@ -106,9 +106,8 @@ void DeviceInfo::set_mac(QByteArray&& mac)
 {
     char mac_str[18];
     snprintf(
-        mac_str, 17, "%02x:%02x:%02x:%02x:%02x:%02x",
+        mac_str, 18, "%02x:%02x:%02x:%02x:%02x:%02x",
         mac.at(0), mac.at(1), mac.at(2), mac.at(3), mac.at(4), mac.at(5));
-    mac_str[17] = 0;
 
     m_mac = std::string(mac_str);
 }
