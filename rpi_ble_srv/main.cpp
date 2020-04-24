@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     ** define BLE characteristics
     */
 
-    // define MAC address characteristic data
+    // define device MAC address characteristic data
     qDebug() << "Adding device MAC characteristic data " << DEV_MAC_UUID;
 
     QLowEnergyCharacteristicData mac_char;
@@ -43,6 +43,16 @@ int main(int argc, char *argv[])
     mac_char.setValue(device_info.mac_bytes());
     mac_char.setValueLength(6, 6);
     mac_char.setProperties(QLowEnergyCharacteristic::Read);
+
+    // define device name characteristic data
+    qDebug() << "Adding device name characteristic data " << DEV_NAME_UUID;
+
+    QLowEnergyCharacteristicData name_char;
+    name_char.setUuid(QBluetoothUuid(DEV_NAME_UUID));
+    name_char.setValue(QByteArray::fromStdString(device_info.name()));
+    name_char.setValueLength(0, 64);
+    // TODO: should be writable as well
+    name_char.setProperties(QLowEnergyCharacteristic::Read);
 
     /*
     ** define BLE service
@@ -54,6 +64,7 @@ int main(int argc, char *argv[])
     svc_data.setUuid(QBluetoothUuid(SVC_UUID));
 
     svc_data.addCharacteristic(mac_char);
+    svc_data.addCharacteristic(name_char);
 
     /*
     ** initialize the BLE peripheral controller and start advertising
