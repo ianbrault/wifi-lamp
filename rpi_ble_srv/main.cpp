@@ -24,8 +24,8 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     DeviceInfo device_info;
-    qDebug() << "device name: " << device_info.name().c_str();
-    qDebug() << "device MAC address: " << device_info.mac_string().c_str();
+    qDebug() << "device name:" << device_info.name().c_str();
+    qDebug() << "device MAC address:" << device_info.mac_string().c_str();
 
     // set up BLE advertising data
     QLowEnergyAdvertisingData ad_data;
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     */
 
     // define device MAC address characteristic data
-    qDebug() << "Adding device MAC characteristic data " << DEV_MAC_UUID;
+    qDebug() << "Adding device MAC characteristic data" << DEV_MAC_UUID;
 
     QLowEnergyCharacteristicData mac_char;
     mac_char.setUuid(QBluetoothUuid(DEV_MAC_UUID));
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     mac_char.setProperties(QLowEnergyCharacteristic::Read);
 
     // define device name characteristic data
-    qDebug() << "Adding device name characteristic data " << DEV_NAME_UUID;
+    qDebug() << "Adding device name characteristic data" << DEV_NAME_UUID;
 
     QLowEnergyCharacteristicData name_char;
     name_char.setUuid(QBluetoothUuid(DEV_NAME_UUID));
