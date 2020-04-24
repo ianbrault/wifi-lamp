@@ -24,6 +24,8 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     DeviceInfo device_info;
+    qDebug() << "device name: " << device_info.name().c_str();
+    qDebug() << "device MAC address: " << device_info.mac_string().c_str();
 
     // set up BLE advertising data
     QLowEnergyAdvertisingData ad_data;
