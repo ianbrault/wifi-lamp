@@ -23,6 +23,7 @@ HEADERS += \
     deviceview.h \
     mainwindow.h \
     topbanner.h \
+    uuid.hpp
 
 RESOURCES = resources.qrc
 

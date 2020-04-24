@@ -6,9 +6,7 @@
 #include <QLowEnergyController>
 
 #include "devicehandler.h"
-
-const static QString svc_uuid("00000001-dead-fade-cafe-204080160320");
-const static QString mac_uuid("00000002-dead-fade-cafe-204080160320");
+#include "uuid.hpp"
 
 DeviceHandler::DeviceHandler(QObject* parent)
     : QObject(parent)
@@ -53,7 +51,7 @@ void DeviceHandler::set_device(QBluetoothDeviceInfo* dev)
             m_ctrl, &QLowEnergyController::discoveryFinished,
             this, &DeviceHandler::service_scan_done);
         connect(m_ctrl, &QLowEnergyController::connected, this, [this]() {
-            qDebug() << "DeviceHandler: Connected to device, searching for service " << svc_uuid;
+            qDebug() << "DeviceHandler: Connected to device, searching for service" << SVC_UUID;
             m_ctrl->discoverServices();
         });
         connect(m_ctrl, &QLowEnergyController::disconnected, this, []() {
@@ -75,18 +73,18 @@ void DeviceHandler::service_scan_done()
         m_service = nullptr;
     }
 
-    m_service = m_ctrl->createServiceObject(QBluetoothUuid(svc_uuid), this);
+    m_service = m_ctrl->createServiceObject(QBluetoothUuid(SVC_UUID), this);
     if (!m_service)
-        qWarning() << "DeviceHandler: ERROR: lamp service " << svc_uuid << " not found";
+        qWarning() << "DeviceHandler: ERROR: lamp service" << SVC_UUID << "not found";
     else
     {
-        qDebug() << "DeviceHandler: found service " << svc_uuid;
+        qDebug() << "DeviceHandler: found service" << SVC_UUID;
 
         connect(
             m_service, &QLowEnergyService::stateChanged,
             this, &DeviceHandler::service_state_changed);
 
-        qDebug() << "DeviceHandler: searching for service " << svc_uuid << " characteristics";
+        qDebug() << "DeviceHandler: searching for service" << SVC_UUID << "characteristics";
         m_service->discoverDetails();
     }
 }
@@ -105,11 +103,17 @@ void DeviceHandler::service_state_changed(QLowEnergyService::ServiceState s)
 
 void DeviceHandler::add_characteristics()
 {
-    m_mac_addr = m_service->characteristic(QBluetoothUuid(mac_uuid));
-    if (!m_mac_addr.isValid())
-        qWarning() << "DeviceHandler: MAC address characteristic " << mac_uuid << " is invalid";
+    m_dev_mac = m_service->characteristic(QBluetoothUuid(DEV_MAC_UUID));
+    if (!m_dev_mac.isValid())
+        qWarning() << "DeviceHandler: MAC address characteristic" << DEV_MAC_UUID << "is invalid";
     else
-        qDebug() << "DeviceHandler: found MAC address characteristic " << mac_uuid;
+        qDebug() << "DeviceHandler: found MAC address characteristic" << DEV_MAC_UUID;
+
+    m_dev_name = m_service->characteristic(QBluetoothUuid(DEV_NAME_UUID));
+    if (!m_dev_name.isValid())
+        qWarning() << "DeviceHandler: device name characteristic" << DEV_NAME_UUID << "is invalid";
+    else
+        qDebug() << "DeviceHandler: found device name characteristic" << DEV_NAME_UUID;
 
     // TODO: emit signal
 }

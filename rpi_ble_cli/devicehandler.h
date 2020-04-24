@@ -27,7 +27,8 @@ private:
     QBluetoothDeviceInfo* m_device  = nullptr;
     QLowEnergyService*    m_service = nullptr;
 
-    QLowEnergyCharacteristic m_mac_addr;
+    QLowEnergyCharacteristic m_dev_mac;
+    QLowEnergyCharacteristic m_dev_name;
 };
 
 #endif // DEVICEHANDLER_H
