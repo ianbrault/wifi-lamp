@@ -2,26 +2,19 @@
 ** device_view.cpp
 */
 
+#include "banner_view.h"
+#include "device_finder.h"
+#include "device_handler.h"
+#include "device_info_view.h"
+#include "device_view.h"
+#include "spinner.h"
+#include "utils.hpp"
+
 #include <QBluetoothDeviceInfo>
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QVBoxLayout>
-
-#include "device_finder.h"
-#include "device_handler.h"
-#include "device_view.h"
-#include "spinner.h"
-#include "banner_view.h"
-
-static const QString system_gray("#8e8e93");
-
-static QPixmap get_pixmap(const QString& file, int height)
-{
-    auto pxm = QPixmap(file);
-    pxm.setDevicePixelRatio(3.0);
-    return pxm.scaledToHeight(height * 3.0, Qt::SmoothTransformation);
-}
 
 /*
 ** ClickableLabel
@@ -40,56 +33,6 @@ void ClickableLabel::mousePressEvent(QMouseEvent* event)
     if (event) {}
     emit clicked();
 }
-
-/*
-** DeviceInfoView
-*/
-
-DeviceInfoView::DeviceInfoView(QWidget* parent)
-    : QWidget(parent)
-{
-    m_connected = get_pixmap(":/connected.svg", 45);
-    m_disconnected = get_pixmap(":/disconnected.svg", 45);
-
-    /*
-    ** initialize layout
-    */
-
-    auto layout = new QHBoxLayout();
-    layout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-
-    m_connection_icon = new QLabel();
-    m_connection_icon->setPixmap(m_disconnected);
-
-    auto info_text = new QVBoxLayout();
-    info_text->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    info_text->setSpacing(4);
-
-    m_device_name = new QLabel("Not Connected");
-    m_device_name->setStyleSheet("font-size: 24px; font-weight: bold");
-
-    m_device_mac = new QLabel("00:00:00:00:00:00");
-    m_device_mac->setStyleSheet("font-size: 17px; color: " + system_gray);
-
-    info_text->addWidget(m_device_name);
-    info_text->addWidget(m_device_mac);
-
-    auto connect_button = new ClickableLabel();
-    connect_button->setAlignment(Qt::AlignCenter);
-    connect_button->setPixmap(get_pixmap(":/load.svg", 36));
-
-    layout->addSpacing(4);
-    layout->addWidget(m_connection_icon);
-    layout->addSpacing(16);
-    layout->addLayout(info_text);
-    layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding));
-    layout->addWidget(connect_button);
-    layout->addSpacing(4);
-
-    setLayout(layout);
-}
-
-DeviceInfoView::~DeviceInfoView() {}
 
 /*
 ** DevicePairView

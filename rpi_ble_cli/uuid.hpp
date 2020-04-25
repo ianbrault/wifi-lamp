@@ -1,7 +1,3 @@
-/*
-** uuid.hpp
-*/
-
 #ifndef UUID_HPP
 #define UUID_HPP
 
@@ -22,4 +18,4 @@ const auto NWK_STAT_UUID = GET_UUID("0004");
 const auto NWK_SSID_UUID = GET_UUID("0005");
 const auto NWK_PWD_UUID  = GET_UUID("0006");
 
-#endif
+#endif // UUID_HPP

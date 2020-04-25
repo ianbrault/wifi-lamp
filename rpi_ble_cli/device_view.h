@@ -1,5 +1,5 @@
-#ifndef DEVICEVIEW_H
-#define DEVICEVIEW_H
+#ifndef DEVICE_VIEW_H
+#define DEVICE_VIEW_H
 
 #include <QIcon>
 #include <QLabel>
@@ -8,6 +8,7 @@
 
 class DeviceFinder;
 class DeviceHandler;
+class DeviceInfoView;
 class QBluetoothDeviceInfo;
 class QPushButton;
 class Spinner;
@@ -25,23 +26,6 @@ signals:
 
 protected:
     void mousePressEvent(QMouseEvent*);
-};
-
-class DeviceInfoView : public QWidget
-{
-    Q_OBJECT
-
-public:
-    DeviceInfoView(QWidget* parent = nullptr);
-    virtual ~DeviceInfoView();
-
-private:
-    QPixmap m_connected;
-    QPixmap m_disconnected;
-
-    QLabel* m_connection_icon;
-    QLabel* m_device_name;
-    QLabel* m_device_mac;
 };
 
 class DevicePairView : public QWidget
@@ -108,4 +92,4 @@ private:
     ClickableLabel* m_device_on_off;
 };
 
-#endif // DEVICEVIEW_H
+#endif // DEVICE_VIEW_H

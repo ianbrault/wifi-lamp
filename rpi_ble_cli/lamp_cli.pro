@@ -12,6 +12,7 @@ SOURCES += \
     banner_view.cpp \
     device_finder.cpp \
     device_handler.cpp \
+    device_info_view.cpp \
     device_view.cpp \
     spinner.cpp \
     main.cpp
@@ -20,8 +21,10 @@ HEADERS += \
     banner_view.h \
     device_finder.h \
     device_handler.h \
+    device_info_view.h \
     device_view.h \
     spinner.h \
+    utils.hpp \
     uuid.hpp
 
 RESOURCES = resources.qrc
