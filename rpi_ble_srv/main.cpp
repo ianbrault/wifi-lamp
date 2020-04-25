@@ -24,8 +24,11 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     DeviceInfo device_info;
+
     qDebug() << "device name:" << device_info.name().c_str();
     qDebug() << "device MAC address:" << device_info.mac_string().c_str();
+    qDebug() << "network SSID:" << device_info.network_ssid().c_str();
+    qDebug() << "network password:" << device_info.network_password().c_str();
 
     // set up BLE advertising data
     QLowEnergyAdvertisingData ad_data;
@@ -37,8 +40,8 @@ int main(int argc, char *argv[])
     ** define BLE characteristics
     */
 
-    // define device MAC address characteristic data
-    qDebug() << "Adding device MAC characteristic data" << DEV_MAC_UUID;
+    // define device MAC address characteristic
+    qDebug() << "Adding device MAC characteristic" << DEV_MAC_UUID;
 
     QLowEnergyCharacteristicData mac_char;
     mac_char.setUuid(QBluetoothUuid(DEV_MAC_UUID));
@@ -46,8 +49,8 @@ int main(int argc, char *argv[])
     mac_char.setValueLength(6, 6);
     mac_char.setProperties(QLowEnergyCharacteristic::Read);
 
-    // define device name characteristic data
-    qDebug() << "Adding device name characteristic data" << DEV_NAME_UUID;
+    // define device name characteristic
+    qDebug() << "Adding device name characteristic" << DEV_NAME_UUID;
 
     QLowEnergyCharacteristicData name_char;
     name_char.setUuid(QBluetoothUuid(DEV_NAME_UUID));
@@ -55,6 +58,26 @@ int main(int argc, char *argv[])
     name_char.setValueLength(0, 64);
     // TODO: should be writable as well
     name_char.setProperties(QLowEnergyCharacteristic::Read);
+
+    // define network SSID characteristic
+    qDebug() << "Adding network SSID characteristic" << NWK_SSID_UUID;
+
+    QLowEnergyCharacteristicData ssid_char;
+    ssid_char.setUuid(QBluetoothUuid(NWK_SSID_UUID));
+    ssid_char.setValue(QByteArray::fromStdString(device_info.network_ssid()));
+    ssid_char.setValueLength(0, 64);
+    // TODO: should be writable as well
+    ssid_char.setProperties(QLowEnergyCharacteristic::Read);
+
+    // define network password characteristic
+    qDebug() << "Adding network password characteristic" << NWK_PWD_UUID;
+
+    QLowEnergyCharacteristicData pwd_char;
+    pwd_char.setUuid(QBluetoothUuid(NWK_PWD_UUID));
+    pwd_char.setValue(QByteArray::fromStdString(device_info.network_password()));
+    pwd_char.setValueLength(0, 64);
+    // TODO: should be writable as well
+    pwd_char.setProperties(QLowEnergyCharacteristic::Read);
 
     /*
     ** define BLE service

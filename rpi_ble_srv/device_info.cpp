@@ -2,12 +2,12 @@
 ** device_info.cpp
 */
 
+#include "device_info.hpp"
+
 #include <cctype>
 #include <cstdlib>
 #include <fstream>
 #include <unistd.h>
-
-#include "device_info.hpp"
 
 static bool file_exists(const std::string& path)
 {
@@ -45,6 +45,8 @@ DeviceInfo::DeviceInfo()
     {
         m_name = "UNNAMED";
         m_mac = get_mac();
+        m_ssid = "";
+        m_pwd = "";
 
         save_to_file();
     }
@@ -65,17 +67,27 @@ void DeviceInfo::load_from_file()
 
     pos = line.find(',');
     m_name = line.substr(0, pos);
-    pos_prev = pos;
+    pos_prev = pos + 1;
+
+    pos = line.find(',', pos_prev);
+    m_mac = line.substr(pos_prev, pos - pos_prev);
+    pos_prev = pos + 1;
+
+    pos = line.find(',', pos_prev);
+    m_ssid = line.substr(pos_prev, pos - pos_prev);
+    pos_prev = pos + 1;
 
     pos = line.find('\n', pos_prev);
-    m_mac = line.substr(pos_prev + 1, pos);
+    m_pwd = line.substr(pos_prev, pos - pos_prev);
 }
 
 void DeviceInfo::save_to_file()
 {
     std::ofstream file(filepath(), std::ios_base::out | std::ios_base::trunc);
     file << m_name << ","
-         << m_mac  << "\n";
+         << m_mac  << ","
+         << m_ssid << ","
+         << m_pwd  << "\n";
 }
 
 const std::string& DeviceInfo::name() const
@@ -97,6 +109,16 @@ const QByteArray DeviceInfo::mac_bytes() const
     return QByteArray::fromRawData(mac_bytes, 6);
 }
 
+const std::string& DeviceInfo::network_ssid() const
+{
+    return m_ssid;
+}
+
+const std::string& DeviceInfo::network_password() const
+{
+    return m_pwd;
+}
+
 void DeviceInfo::set_name(std::string&& name)
 {
     m_name = name;
@@ -110,4 +132,14 @@ void DeviceInfo::set_mac(QByteArray&& mac)
         mac.at(0), mac.at(1), mac.at(2), mac.at(3), mac.at(4), mac.at(5));
 
     m_mac = std::string(mac_str);
+}
+
+void DeviceInfo::set_network_ssid(std::string&& ssid)
+{
+    m_ssid = ssid;
+}
+
+void DeviceInfo::set_network_password(std::string&& pwd)
+{
+    m_pwd = pwd;
 }
