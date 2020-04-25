@@ -10,17 +10,17 @@ ios {
 
 SOURCES += \
     banner_view.cpp \
-    devicefinder.cpp \
-    devicehandler.cpp \
-    deviceview.cpp \
+    device_finder.cpp \
+    device_handler.cpp \
+    device_view.cpp \
     spinner.cpp \
     main.cpp
 
 HEADERS += \
     banner_view.h \
-    devicefinder.h \
-    devicehandler.h \
-    deviceview.h \
+    device_finder.h \
+    device_handler.h \
+    device_view.h \
     spinner.h \
     uuid.hpp
 
