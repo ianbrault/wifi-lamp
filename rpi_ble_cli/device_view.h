@@ -6,27 +6,13 @@
 #include <QPixmap>
 #include <QWidget>
 
+class ClickableLabel;
 class DeviceFinder;
 class DeviceHandler;
 class DeviceInfoView;
 class QBluetoothDeviceInfo;
 class QPushButton;
 class Spinner;
-
-class ClickableLabel : public QLabel
-{
-    Q_OBJECT
-
-public:
-    ClickableLabel(QWidget* parent = nullptr);
-    virtual ~ClickableLabel();
-
-signals:
-    void clicked();
-
-protected:
-    void mousePressEvent(QMouseEvent*);
-};
 
 class DevicePairView : public QWidget
 {

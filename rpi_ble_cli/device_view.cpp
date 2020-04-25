@@ -17,24 +17,6 @@
 #include <QVBoxLayout>
 
 /*
-** ClickableLabel
-*/
-
-ClickableLabel::ClickableLabel(QWidget* parent)
-    : QLabel(parent)
-{
-
-}
-
-ClickableLabel::~ClickableLabel() {}
-
-void ClickableLabel::mousePressEvent(QMouseEvent* event)
-{
-    if (event) {}
-    emit clicked();
-}
-
-/*
 ** DevicePairView
 */
 
