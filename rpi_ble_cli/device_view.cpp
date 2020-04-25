@@ -1,5 +1,5 @@
 /*
-** deviceview.cpp
+** device_view.cpp
 */
 
 #include <QBluetoothDeviceInfo>
@@ -8,9 +8,9 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-#include "devicefinder.h"
-#include "devicehandler.h"
-#include "deviceview.h"
+#include "device_finder.h"
+#include "device_handler.h"
+#include "device_view.h"
 #include "spinner.h"
 #include "banner_view.h"
 

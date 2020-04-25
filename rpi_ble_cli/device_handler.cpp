@@ -5,7 +5,7 @@
 #include <QBluetoothDeviceInfo>
 #include <QLowEnergyController>
 
-#include "devicehandler.h"
+#include "device_handler.h"
 #include "uuid.hpp"
 
 DeviceHandler::DeviceHandler(QObject* parent)

@@ -5,7 +5,7 @@
 #include <QApplication>
 #include <QMainWindow>
 
-#include "deviceview.h"
+#include "device_view.h"
 
 int main(int argc, char *argv[])
 {

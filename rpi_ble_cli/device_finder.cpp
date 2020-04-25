@@ -4,8 +4,8 @@
 
 #include <QBluetoothDeviceInfo>
 
-#include "devicefinder.h"
-#include "devicehandler.h"
+#include "device_finder.h"
+#include "device_handler.h"
 
 DeviceFinder::DeviceFinder(DeviceHandler* handler, QObject* parent)
     : QObject(parent), m_handler(handler)
