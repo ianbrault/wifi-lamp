@@ -103,17 +103,46 @@ void DeviceHandler::service_state_changed(QLowEnergyService::ServiceState s)
 
 void DeviceHandler::add_characteristics()
 {
+    qDebug() << "DeviceHandler: find MAC address characteristic" << DEV_MAC_UUID;
     m_dev_mac = m_service->characteristic(QBluetoothUuid(DEV_MAC_UUID));
     if (!m_dev_mac.isValid())
+    {
         qWarning() << "DeviceHandler: MAC address characteristic" << DEV_MAC_UUID << "is invalid";
-    else
-        qDebug() << "DeviceHandler: found MAC address characteristic" << DEV_MAC_UUID;
+        emit device_characteristic_error();
+        return;
+    }
 
+    qDebug() << "DeviceHandler: find device name characteristic" << DEV_NAME_UUID;
     m_dev_name = m_service->characteristic(QBluetoothUuid(DEV_NAME_UUID));
     if (!m_dev_name.isValid())
+    {
         qWarning() << "DeviceHandler: device name characteristic" << DEV_NAME_UUID << "is invalid";
-    else
-        qDebug() << "DeviceHandler: found device name characteristic" << DEV_NAME_UUID;
+        emit device_characteristic_error();
+        return;
+    }
 
-    // TODO: emit signal
+    emit device_found();
+}
+
+std::string DeviceHandler::read_device_mac()
+{
+    if (!m_dev_mac.isValid())
+        return std::string();
+
+    auto mac = m_dev_mac.value();
+    char mac_str[18];
+    snprintf(
+        mac_str, 18, "%02x:%02x:%02x:%02x:%02x:%02x",
+        mac.at(0), mac.at(1), mac.at(2), mac.at(3), mac.at(4), mac.at(5));
+
+    return std::string(mac_str);
+}
+
+std::string DeviceHandler::read_device_name()
+{
+    if (!m_dev_name.isValid())
+        return std::string();
+
+    auto name_bytes = m_dev_name.value();
+    return name_bytes.toStdString();
 }

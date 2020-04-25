@@ -8,7 +8,9 @@
 
 class DeviceFinder;
 class DeviceHandler;
+class QBluetoothDeviceInfo;
 class QPushButton;
+class Spinner;
 
 class ClickableLabel : public QLabel
 {
@@ -82,10 +84,19 @@ public:
 
 private:
     void setup_layout();
+    void search_for_device();
+
+private slots:
+    void device_found();
+    void device_not_found();
 
 private:
     DeviceFinder*  m_finder;
     DeviceHandler* m_handler;
+
+    Spinner* m_spinner;
+    bool m_searching = false;
+    bool m_device_found = false;
 
     DeviceInfoView*    m_device_info;
     DevicePairView*    m_device_pair;

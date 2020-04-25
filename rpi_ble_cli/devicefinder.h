@@ -23,6 +23,9 @@ private slots:
     void scan_error(QBluetoothDeviceDiscoveryAgent::Error);
     void scan_finished();
 
+signals:
+    void device_not_found();
+
 private:
     QBluetoothDeviceDiscoveryAgent* m_discovery_agent;
     QBluetoothDeviceInfo            m_device;

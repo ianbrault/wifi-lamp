@@ -1,16 +1,16 @@
 /*
-** topbanner.cpp
+** banner_view.cpp
 */
 
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPainter>
 
-#include "topbanner.h"
+#include "banner_view.h"
 
 static const QColor color(0x49, 0x59, 0x9a);
 
-TopBanner::TopBanner(QWidget* parent)
+BannerView::BannerView(QWidget* parent)
     : QWidget(parent)
 {
     auto width = this->size().width();
@@ -29,19 +29,19 @@ TopBanner::TopBanner(QWidget* parent)
 
     auto line_width = (width - image_width) / 2;
 
-    layout->addWidget(new TopBannerLine(line_width));
+    layout->addWidget(new BannerLine(line_width));
     layout->addWidget(image);
-    layout->addWidget(new TopBannerLine(line_width));
+    layout->addWidget(new BannerLine(line_width));
 
     setLayout(layout);
 }
 
-TopBanner::~TopBanner()
+BannerView::~BannerView()
 {
-    
+
 }
 
-TopBannerLine::TopBannerLine(int width, QWidget* parent)
+BannerLine::BannerLine(int width, QWidget* parent)
     : QWidget(parent)
 {
     m_pen.setColor(color);
@@ -52,12 +52,12 @@ TopBannerLine::TopBannerLine(int width, QWidget* parent)
     resize(width, 8);
 }
 
-TopBannerLine::~TopBannerLine()
+BannerLine::~BannerLine()
 {
 
 }
 
-void TopBannerLine::paintEvent(QPaintEvent* event)
+void BannerLine::paintEvent(QPaintEvent* event)
 {
     if (event) {}  // suppress unused warning
 

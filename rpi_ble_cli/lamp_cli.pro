@@ -1,5 +1,4 @@
-QT += core gui bluetooth svg
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += core gui widgets bluetooth svg
 
 CONFIG += c++14
 
@@ -10,19 +9,19 @@ ios {
 }
 
 SOURCES += \
+    banner_view.cpp \
     devicefinder.cpp \
     devicehandler.cpp \
     deviceview.cpp \
-    mainwindow.cpp \
-    topbanner.cpp \
+    spinner.cpp \
     main.cpp
 
 HEADERS += \
+    banner_view.h \
     devicefinder.h \
     devicehandler.h \
     deviceview.h \
-    mainwindow.h \
-    topbanner.h \
+    spinner.h \
     uuid.hpp
 
 RESOURCES = resources.qrc

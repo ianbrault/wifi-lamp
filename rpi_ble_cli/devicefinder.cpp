@@ -60,9 +60,10 @@ void DeviceFinder::scan_error(QBluetoothDeviceDiscoveryAgent::Error error)
 void DeviceFinder::scan_finished()
 {
     if (!m_device.isValid())
+    {
         qWarning() << "DeviceFinder: ERROR: Lamp device not found";
-
-    // TODO: emit a signal
+        emit device_not_found();
+    }
 }
 
 void DeviceFinder::start_search()
