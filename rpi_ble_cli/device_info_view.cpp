@@ -2,6 +2,7 @@
 ** device_info_view.cpp
 */
 
+#include "clickable_label.h"
 #include "device_info_view.h"
 #include "utils.hpp"
 
@@ -54,3 +55,13 @@ DeviceInfoView::DeviceInfoView(QWidget* parent)
 }
 
 DeviceInfoView::~DeviceInfoView() {}
+
+void DeviceInfoView::set_name(std::string&& name)
+{
+    m_device_name->setText(QString(name.c_str()));
+}
+
+void DeviceInfoView::set_mac(std::string&& mac)
+{
+    m_device_mac->setText(QString(mac.c_str()));
+}

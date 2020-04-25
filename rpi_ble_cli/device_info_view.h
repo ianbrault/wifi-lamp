@@ -14,6 +14,10 @@ public:
     DeviceInfoView(QWidget* parent = nullptr);
     virtual ~DeviceInfoView();
 
+public:
+    void set_name(std::string&&);
+    void set_mac(std::string&&);
+
 private:
     QPixmap m_connected;
     QPixmap m_disconnected;

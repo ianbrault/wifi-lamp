@@ -3,6 +3,7 @@
 */
 
 #include "banner_view.h"
+#include "clickable_label.h"
 #include "device_finder.h"
 #include "device_handler.h"
 #include "device_info_view.h"
@@ -162,14 +163,6 @@ void DeviceView::setup_layout()
     layout->addWidget(m_device_info);
     layout->addSpacing(50);
 
-    /*
-    layout->addWidget(m_device_on_off);
-    layout->addSpacing(50);
-    layout->addWidget(m_device_pair);
-    layout->addSpacing(8);
-    layout->addWidget(m_device_network);
-    */
-
     setLayout(layout);
 }
 
@@ -197,7 +190,9 @@ void DeviceView::device_found()
     // remove the spinner
     layout()->removeWidget(m_spinner);
 
-    // TODO: set device info
+    // set device info
+    m_device_info->set_name(m_handler->read_device_name());
+    m_device_info->set_mac(m_handler->read_device_mac());
 
     // add device views
     layout()->addWidget(m_device_on_off);

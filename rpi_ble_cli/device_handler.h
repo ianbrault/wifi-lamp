@@ -17,14 +17,13 @@ public:
 
 public:
     void set_device(QBluetoothDeviceInfo*);
+    std::string read_device_mac();
+    std::string read_device_name();
 
 private:
     void service_scan_done();
     void service_state_changed(QLowEnergyService::ServiceState);
     void add_characteristics();
-
-    std::string read_device_mac();
-    std::string read_device_name();
 
 signals:
     void device_found();

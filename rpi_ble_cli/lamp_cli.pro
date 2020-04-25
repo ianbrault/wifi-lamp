@@ -10,6 +10,7 @@ ios {
 
 SOURCES += \
     banner_view.cpp \
+    clickable_label.cpp \
     device_finder.cpp \
     device_handler.cpp \
     device_info_view.cpp \
@@ -19,6 +20,7 @@ SOURCES += \
 
 HEADERS += \
     banner_view.h \
+    clickable_label.h \
     device_finder.h \
     device_handler.h \
     device_info_view.h \
