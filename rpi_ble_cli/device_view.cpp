@@ -71,7 +71,7 @@ DeviceNetworkView::DeviceNetworkView(QWidget* parent)
     m_network_name->setStyleSheet("font-size: 20px");
 
     // password dot is UTF-8: \u2022
-    m_network_password = new QLabel("<b>Password:</b> higgins3");
+    m_network_password = new QLabel("<b>Password:</b>");
     m_network_password->setStyleSheet("font-size: 20px");
 
     network_text->addWidget(m_network_name);
@@ -191,8 +191,9 @@ void DeviceView::device_found()
     layout()->removeWidget(m_spinner);
 
     // set device info
-    m_device_info->set_name(m_handler->read_device_name());
-    m_device_info->set_mac(m_handler->read_device_mac());
+    auto name = m_handler->read_device_name();
+    auto mac = m_handler->read_device_mac();
+    m_device_info->set_device_info(std::move(name), std::move(mac));
 
     // add device views
     layout()->addWidget(m_device_on_off);

@@ -1,8 +1,6 @@
 #ifndef DEVICE_VIEW_H
 #define DEVICE_VIEW_H
 
-#include <QIcon>
-#include <QLabel>
 #include <QPixmap>
 #include <QWidget>
 
@@ -11,6 +9,7 @@ class DeviceFinder;
 class DeviceHandler;
 class DeviceInfoView;
 class QBluetoothDeviceInfo;
+class QLabel;
 class QPushButton;
 class Spinner;
 

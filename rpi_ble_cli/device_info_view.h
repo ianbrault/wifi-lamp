@@ -15,6 +15,9 @@ public:
     virtual ~DeviceInfoView();
 
 public:
+    void set_device_info(std::string&&, std::string&&);
+
+private:
     void set_name(std::string&&);
     void set_mac(std::string&&);
 

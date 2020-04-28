@@ -56,6 +56,13 @@ DeviceInfoView::DeviceInfoView(QWidget* parent)
 
 DeviceInfoView::~DeviceInfoView() {}
 
+void DeviceInfoView::set_device_info(std::string&& name, std::string&& mac)
+{
+    m_connection_icon->setPixmap(m_connected);
+    set_name(std::move(name));
+    set_mac(std::move(mac));
+}
+
 void DeviceInfoView::set_name(std::string&& name)
 {
     m_device_name->setText(QString(name.c_str()));

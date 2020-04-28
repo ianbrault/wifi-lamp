@@ -16,6 +16,7 @@ SOURCES += \
     device_info_view.cpp \
     device_view.cpp \
     spinner.cpp \
+    utils.cpp \
     main.cpp
 
 HEADERS += \

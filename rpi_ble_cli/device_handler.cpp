@@ -2,11 +2,14 @@
 ** devicehandler.cpp
 */
 
-#include <QBluetoothDeviceInfo>
-#include <QLowEnergyController>
-
 #include "device_handler.h"
 #include "uuid.hpp"
+
+#include <iomanip>
+#include <sstream>
+
+#include <QBluetoothDeviceInfo>
+#include <QLowEnergyController>
 
 DeviceHandler::DeviceHandler(QObject* parent)
     : QObject(parent)
@@ -129,13 +132,19 @@ std::string DeviceHandler::read_device_mac()
     if (!m_dev_mac.isValid())
         return std::string();
 
-    auto mac = m_dev_mac.value();
-    char mac_str[18];
-    snprintf(
-        mac_str, 18, "%02x:%02x:%02x:%02x:%02x:%02x",
-        mac.at(0), mac.at(1), mac.at(2), mac.at(3), mac.at(4), mac.at(5));
+    auto mac_bytes = m_dev_mac.value();
 
-    return std::string(mac_str);
+    std::stringstream stream;
+    stream << std::setfill('0') << std::setw(2);
+    for (auto i = 0; i < 6; i++)
+    {
+        auto byte = ((int) mac_bytes.at(i)) & 0xff;
+        stream << std::hex << byte;
+        if (i != 5)
+            stream << ":";
+    }
+
+    return stream.str();
 }
 
 std::string DeviceHandler::read_device_name()
