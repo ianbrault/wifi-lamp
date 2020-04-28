@@ -2,7 +2,9 @@
 ** main.cpp
 */
 
-#include <QBluetoothUuid>
+#include <iomanip>
+#include <sstream>
+
 #include <QCoreApplication>
 #include <QDebug>
 #include <QLowEnergyAdvertisingData>
@@ -19,6 +21,91 @@
 #include "device_info.hpp"
 #include "uuid.hpp"
 
+static QLowEnergyServiceData device_info_service;
+static QLowEnergyServiceData device_network_service;
+
+static QLowEnergyCharacteristicData dev_name_char;
+static QLowEnergyCharacteristicData dev_mac_char;
+static QLowEnergyCharacteristicData dev_ptnr_char;
+static QLowEnergyCharacteristicData nwk_stat_char;
+static QLowEnergyCharacteristicData nwk_ssid_char;
+static QLowEnergyCharacteristicData nwk_pass_char;
+
+static std::string uuid_to_string(const QBluetoothUuid& uuid)
+{
+    std::stringstream stream;
+    stream << std::setfill('0') << std::setw(2)
+           << "0x" << std::hex << uuid.toUInt16();
+
+    return stream.str();
+}
+
+static void define_device_info_service(const DeviceInfo& dev_info)
+{
+    qDebug() << "Creating device information service"
+             << uuid_to_string(DeviceInfoService).c_str();
+
+    device_info_service.setType(QLowEnergyServiceData::ServiceTypePrimary);
+    device_info_service.setUuid(DeviceInfoService);
+
+    // define device name characteristic
+    qDebug() << "Creating device name characteristic"
+             << uuid_to_string(DeviceNameChar).c_str();
+
+    dev_name_char.setUuid(DeviceNameChar);
+    dev_name_char.setValue(QByteArray::fromStdString(dev_info.name()));
+    dev_name_char.setValueLength(0, 64);
+    // TODO: should be writable as well
+    dev_name_char.setProperties(QLowEnergyCharacteristic::Read);
+
+    // define device MAC address characteristic
+    qDebug() << "Creating device MAC characteristic"
+             << uuid_to_string(DeviceMacChar).c_str();
+
+    dev_mac_char.setUuid(DeviceMacChar);
+    dev_mac_char.setValue(dev_info.mac_bytes());
+    dev_mac_char.setValueLength(6, 6);
+    dev_mac_char.setProperties(QLowEnergyCharacteristic::Read);
+
+    device_info_service.addCharacteristic(dev_name_char);
+    device_info_service.addCharacteristic(dev_mac_char);
+}
+
+static void define_device_network_service(const DeviceInfo& dev_info)
+{
+    qDebug() << "Creating device network service"
+             << uuid_to_string(DeviceNetworkService).c_str();
+
+    auto ssid = QByteArray::fromStdString(dev_info.network_ssid());
+    auto password = QByteArray::fromStdString(dev_info.network_password());
+
+    device_network_service.setType(QLowEnergyServiceData::ServiceTypePrimary);
+    device_network_service.setUuid(DeviceNetworkService);
+
+    // define network SSID characteristic
+    qDebug() << "Creating network SSID characteristic"
+             << uuid_to_string(NetworkSSIDChar).c_str();
+
+    nwk_ssid_char.setUuid(NetworkSSIDChar);
+    nwk_ssid_char.setValue(ssid);
+    nwk_ssid_char.setValueLength(0, 64);
+    // TODO: should be writable as well
+    nwk_ssid_char.setProperties(QLowEnergyCharacteristic::Read);
+
+    // define network password characteristic
+    qDebug() << "Creating network password characteristic"
+             << uuid_to_string(NetworkPasswordChar).c_str();
+
+    nwk_pass_char.setUuid(NetworkPasswordChar);
+    nwk_pass_char.setValue(password);
+    nwk_pass_char.setValueLength(0, 64);
+    // TODO: should be writable as well
+    nwk_pass_char.setProperties(QLowEnergyCharacteristic::Read);
+
+    device_network_service.addCharacteristic(nwk_ssid_char);
+    device_network_service.addCharacteristic(nwk_pass_char);
+}
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
@@ -34,78 +121,23 @@ int main(int argc, char *argv[])
     QLowEnergyAdvertisingData ad_data;
     ad_data.setDiscoverability(QLowEnergyAdvertisingData::DiscoverabilityGeneral);
     ad_data.setLocalName("LampSrv");
-    ad_data.setServices(QList<QBluetoothUuid>() << QBluetoothUuid(SVC_UUID));
+    ad_data.setServices(QList<QBluetoothUuid>()
+        << DeviceInfoService
+        << DeviceNetworkService);
 
-    /*
-    ** define BLE characteristics
-    */
+    // define services
+    define_device_info_service(device_info);
+    define_device_network_service(device_info);
 
-    // define device MAC address characteristic
-    qDebug() << "Adding device MAC characteristic" << DEV_MAC_UUID;
-
-    QLowEnergyCharacteristicData mac_char;
-    mac_char.setUuid(QBluetoothUuid(DEV_MAC_UUID));
-    mac_char.setValue(device_info.mac_bytes());
-    mac_char.setValueLength(6, 6);
-    mac_char.setProperties(QLowEnergyCharacteristic::Read);
-
-    // define device name characteristic
-    qDebug() << "Adding device name characteristic" << DEV_NAME_UUID;
-
-    QLowEnergyCharacteristicData name_char;
-    name_char.setUuid(QBluetoothUuid(DEV_NAME_UUID));
-    name_char.setValue(QByteArray::fromStdString(device_info.name()));
-    name_char.setValueLength(0, 64);
-    // TODO: should be writable as well
-    name_char.setProperties(QLowEnergyCharacteristic::Read);
-
-    // define network SSID characteristic
-    qDebug() << "Adding network SSID characteristic" << NWK_SSID_UUID;
-
-    QLowEnergyCharacteristicData ssid_char;
-    ssid_char.setUuid(QBluetoothUuid(NWK_SSID_UUID));
-    ssid_char.setValue(QByteArray::fromStdString(device_info.network_ssid()));
-    ssid_char.setValueLength(0, 64);
-    // TODO: should be writable as well
-    ssid_char.setProperties(QLowEnergyCharacteristic::Read);
-
-    // define network password characteristic
-    qDebug() << "Adding network password characteristic" << NWK_PWD_UUID;
-
-    QLowEnergyCharacteristicData pwd_char;
-    pwd_char.setUuid(QBluetoothUuid(NWK_PWD_UUID));
-    pwd_char.setValue(QByteArray::fromStdString(device_info.network_password()));
-    pwd_char.setValueLength(0, 64);
-    // TODO: should be writable as well
-    pwd_char.setProperties(QLowEnergyCharacteristic::Read);
-
-    /*
-    ** define BLE service
-    */
-    qDebug() << "Creating BLE service " << SVC_UUID;
-
-    QLowEnergyServiceData svc_data;
-    svc_data.setType(QLowEnergyServiceData::ServiceTypePrimary);
-    svc_data.setUuid(QBluetoothUuid(SVC_UUID));
-
-    svc_data.addCharacteristic(mac_char);
-    svc_data.addCharacteristic(name_char);
-
-    /*
-    ** initialize the BLE peripheral controller and start advertising
-    */
-
-    qDebug() << "Initializing BLE peripheral controller";
+    // initialize the BLE peripheral controller and start advertising
+    qDebug() << "Initializing BLE peripheral controller & advertising data";
     const QScopedPointer<QLowEnergyController> ble_ctrl(QLowEnergyController::createPeripheral());
 
-    qDebug() << "Begin advertising data";
-    QScopedPointer<QLowEnergyService> service(ble_ctrl->addService(svc_data));
+    QScopedPointer<QLowEnergyService> info_service(ble_ctrl->addService(device_info_service));
+    QScopedPointer<QLowEnergyService> nwk_service(ble_ctrl->addService(device_network_service));
     ble_ctrl->startAdvertising(QLowEnergyAdvertisingParameters(), ad_data, ad_data);
 
-    /*
-    ** set up connection handlers
-    */
-
+    // set up connection handlers
     ConnectionHandler conn_handler;
     QObject::connect(
         ble_ctrl.data(), &QLowEnergyController::connected,
@@ -117,10 +149,11 @@ int main(int argc, char *argv[])
         ble_ctrl.data(), &QLowEnergyController::stateChanged,
         &conn_handler, &ConnectionHandler::state_changed);
 
-    auto reconnect = [&ble_ctrl, ad_data, &service, svc_data]()
-    {
-        service.reset(ble_ctrl->addService(svc_data));
-        if (!service.isNull())
+    auto reconnect = [&ble_ctrl, ad_data, &info_service, &nwk_service]() {
+        info_service.reset(ble_ctrl->addService(device_info_service));
+        nwk_service.reset(ble_ctrl->addService(device_network_service));
+
+        if (!info_service.isNull() && !nwk_service.isNull())
             ble_ctrl->startAdvertising(
                 QLowEnergyAdvertisingParameters(), ad_data, ad_data);
     };
