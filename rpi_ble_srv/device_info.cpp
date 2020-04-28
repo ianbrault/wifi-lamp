@@ -8,12 +8,13 @@
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
+#include <sys/stat.h>
 #include <unistd.h>
 
 static bool file_exists(const std::string& path)
 {
     struct stat buf;
-    return (stat(name.c_str(), &buf) == 0);
+    return (stat(path.c_str(), &buf) == 0);
 }
 
 static std::string get_mac()
