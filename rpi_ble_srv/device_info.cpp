@@ -102,11 +102,15 @@ const std::string& DeviceInfo::mac_string() const
 
 const QByteArray DeviceInfo::mac_bytes() const
 {
-    char mac_bytes[6];
-    for (int i = 0; i < 6; i++)
-        mac_bytes[i] = std::stoi(m_mac.substr(i * 3, 2), nullptr, 16);
+    QByteArray bytes;
 
-    return QByteArray::fromRawData(mac_bytes, 6);
+    for (int i = 0; i < 6; i++)
+    {
+	auto byte = std::stoi(m_mac.substr(i * 3, 2), nullptr, 16);
+	bytes.append((char) byte);
+    }
+
+    return bytes;
 }
 
 const std::string& DeviceInfo::network_ssid() const
