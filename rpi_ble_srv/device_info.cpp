@@ -7,11 +7,13 @@
 #include <cctype>
 #include <cstdlib>
 #include <fstream>
+#include <sstream>
 #include <unistd.h>
 
 static bool file_exists(const std::string& path)
 {
-    return (access(path.c_str(), F_OK) != -1);
+    struct stat buf;
+    return (stat(name.c_str(), &buf) == 0);
 }
 
 static std::string get_mac()
@@ -54,7 +56,10 @@ DeviceInfo::DeviceInfo()
 
 const std::string DeviceInfo::filepath() const
 {
-    return std::string(std::getenv("HOME")) + "/device.info";
+    std::stringstream stream;
+    stream << std::getenv("HOME") << "/device.info";
+
+    return stream.str();
 }
 
 void DeviceInfo::load_from_file()
@@ -106,8 +111,8 @@ const QByteArray DeviceInfo::mac_bytes() const
 
     for (int i = 0; i < 6; i++)
     {
-	auto byte = std::stoi(m_mac.substr(i * 3, 2), nullptr, 16);
-	bytes.append((char) byte);
+        auto byte = std::stoi(m_mac.substr(i * 3, 2), nullptr, 16);
+        bytes.append((char) byte);
     }
 
     return bytes;
