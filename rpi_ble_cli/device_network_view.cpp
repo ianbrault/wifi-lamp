@@ -22,14 +22,14 @@ DeviceNetworkView::DeviceNetworkView(QWidget* parent)
     network_text->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     network_text->setSpacing(2);
 
-    m_network_name = new QLabel("<b>Network:</b>");
-    m_network_name->setStyleSheet("font-size: 20px");
+    m_network_ssid = new QLabel("<b>Network:</b>");
+    m_network_ssid->setStyleSheet("font-size: 20px");
 
     // password dot is UTF-8: \u2022
     m_network_password = new QLabel("<b>Password:</b>");
     m_network_password->setStyleSheet("font-size: 20px");
 
-    network_text->addWidget(m_network_name);
+    network_text->addWidget(m_network_ssid);
     network_text->addWidget(m_network_password);
 
     layout->addSpacing(9);
@@ -41,3 +41,15 @@ DeviceNetworkView::DeviceNetworkView(QWidget* parent)
 }
 
 DeviceNetworkView::~DeviceNetworkView() {}
+
+void DeviceNetworkView::set_network_ssid(std::string&& ssid)
+{
+    m_network_ssid->setText(
+        QString("<b>Network:</b> %1").arg(ssid.c_str()));
+}
+
+void DeviceNetworkView::set_network_password(std::string&& password)
+{
+    m_network_password->setText(
+        QString("<b>Password:</b> %1").arg(password.c_str()));
+}

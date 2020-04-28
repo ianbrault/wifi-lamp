@@ -8,6 +8,7 @@ class ClickableLabel;
 class DeviceFinder;
 class DeviceHandler;
 class DeviceInfoView;
+class DeviceNetworkView;
 class QBluetoothDeviceInfo;
 class QLabel;
 class QPushButton;

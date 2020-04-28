@@ -159,6 +159,12 @@ void DeviceView::device_found()
     auto mac = m_handler->read_device_mac();
     m_device_info->set_device_info(std::move(name), std::move(mac));
 
+    // set device network info
+    auto ssid = m_handler->read_network_ssid();
+    auto password = m_handler->read_network_password();
+    m_device_network->set_network_ssid(std::move(ssid));
+    m_device_network->set_network_password(std::move(password));
+
     // add device views
     layout()->addWidget(m_device_on_off);
     ((QBoxLayout*) layout())->addSpacing(50);
@@ -173,5 +179,6 @@ void DeviceView::device_not_found()
     m_device_found = false;
 
     // remove the spinner
+    m_spinner->stop();
     layout()->removeWidget(m_spinner);
 }
