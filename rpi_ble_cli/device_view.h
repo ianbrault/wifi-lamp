@@ -30,19 +30,6 @@ private:
     QLabel* m_pair_text;
 };
 
-class DeviceNetworkView : public QWidget
-{
-    Q_OBJECT
-
-public:
-    DeviceNetworkView(QWidget* parent = nullptr);
-    virtual ~DeviceNetworkView();
-
-private:
-    QLabel* m_network_name;
-    QLabel* m_network_password;
-};
-
 class DeviceView : public QWidget
 {
     Q_OBJECT

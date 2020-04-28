@@ -14,6 +14,7 @@ SOURCES += \
     device_finder.cpp \
     device_handler.cpp \
     device_info_view.cpp \
+    device_network_view.cpp \
     device_view.cpp \
     spinner.cpp \
     utils.cpp \
@@ -25,6 +26,7 @@ HEADERS += \
     device_finder.h \
     device_handler.h \
     device_info_view.h \
+    device_network_view.h \
     device_view.h \
     spinner.h \
     utils.hpp \
