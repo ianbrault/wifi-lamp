@@ -58,6 +58,9 @@ static void define_device_info_service(const DeviceInfo& dev_info)
     // TODO: should be writable as well
     dev_name_char.setProperties(QLowEnergyCharacteristic::Read);
 
+    if (!dev_name_char.isValid())
+        qWarning() << "Device name characteristic is invalid";
+
     // define device MAC address characteristic
     qDebug() << "Creating device MAC characteristic"
              << uuid_to_string(DeviceMacChar).c_str();
@@ -67,8 +70,14 @@ static void define_device_info_service(const DeviceInfo& dev_info)
     dev_mac_char.setValueLength(6, 6);
     dev_mac_char.setProperties(QLowEnergyCharacteristic::Read);
 
+    if (!dev_mac_char.isValid())
+        qWarning() << "Device MAC characteristic is invalid";
+
     device_info_service.addCharacteristic(dev_name_char);
     device_info_service.addCharacteristic(dev_mac_char);
+
+    if (!device_info_service.isValid())
+        qWarning() << "Device info service is invalid";
 }
 
 static void define_device_network_service(const DeviceInfo& dev_info)
@@ -92,6 +101,9 @@ static void define_device_network_service(const DeviceInfo& dev_info)
     // TODO: should be writable as well
     nwk_ssid_char.setProperties(QLowEnergyCharacteristic::Read);
 
+    if (!nwk_ssid_char.isValid())
+        qWarning() << "Network SSID characteristic is invalid";
+
     // define network password characteristic
     qDebug() << "Creating network password characteristic"
              << uuid_to_string(NetworkPasswordChar).c_str();
@@ -102,8 +114,14 @@ static void define_device_network_service(const DeviceInfo& dev_info)
     // TODO: should be writable as well
     nwk_pass_char.setProperties(QLowEnergyCharacteristic::Read);
 
+    if (!nwk_pass_char.isValid())
+        qWarning() << "Network password characteristic is invalid";
+
     device_network_service.addCharacteristic(nwk_ssid_char);
     device_network_service.addCharacteristic(nwk_pass_char);
+
+    if (!device_network_service.isValid())
+        qWarning() << "Device network service is invalid";
 }
 
 int main(int argc, char *argv[])
