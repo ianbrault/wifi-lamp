@@ -76,6 +76,8 @@ void DeviceHandler::set_device(QBluetoothDeviceInfo* dev)
             qDebug() << "DeviceHandler: disconnected from device";
         });
 
+        m_info_service_done = false;
+        m_network_service_done = false;
         m_ctrl->connectToDevice();
     }
 }
@@ -97,16 +99,14 @@ void DeviceHandler::service_scan_done()
     }
 
     // when both services have been fully discovered, discover the characteristics
-    bool info_svc_done = false;
-    bool nwk_svc_done  = false;
-    auto service_done = [this, &info_svc_done, &nwk_svc_done](const QBluetoothUuid& svc_uuid) {
+    auto service_done = [this](const QBluetoothUuid& svc_uuid) mutable {
         if (svc_uuid == DeviceInfoService)
-            info_svc_done = true;
+            m_info_service_done = true;
         else if (svc_uuid == DeviceNetworkService)
-            nwk_svc_done = true;
+            m_network_service_done = true;
 
-        if (info_svc_done && nwk_svc_done)
-            add_characteristics();
+        if (m_info_service_done && m_network_service_done)
+            emit device_found();
     };
     connect(this, &DeviceHandler::service_discovered, service_done);
 
@@ -168,7 +168,7 @@ void DeviceHandler::service_scan_done()
 void DeviceHandler::service_state_changed(const QBluetoothUuid& service_uuid, QLowEnergyService::ServiceState s)
 {
     std::stringstream msg;
-    msg << "DeviceHandler: service " << uuid_to_string(service_uuid);
+    msg << "DeviceHandler: service " << uuid_to_string(service_uuid) << ": ";
     switch (s)
     {
         case QLowEnergyService::InvalidService:
@@ -182,7 +182,9 @@ void DeviceHandler::service_state_changed(const QBluetoothUuid& service_uuid, QL
             break;
         case QLowEnergyService::ServiceDiscovered:
             msg << "service discovered";
-            emit service_discovered(service_uuid);
+            (service_uuid == DeviceInfoService)
+                ? add_info_characteristics()
+                : add_network_characteristics();
             break;
         case QLowEnergyService::LocalService:
             msg << "service is associated with a controller object in the peripheral role";
@@ -218,64 +220,60 @@ void DeviceHandler::service_error(const QBluetoothUuid& service_uuid, QLowEnergy
     qWarning() << msg.str().c_str();
 }
 
-void DeviceHandler::add_characteristics()
+void DeviceHandler::add_info_characteristics()
 {
-    auto valid = true;
-    valid = valid && add_info_characteristics();
-    valid = valid && add_network_characteristics();
+    bool valid = true;
 
-    if (valid)
-        emit device_found();
-}
-
-bool DeviceHandler::add_info_characteristics()
-{
     qDebug() << "DeviceHandler: find device name characteristic"
              << uuid_to_string(DeviceNameChar).c_str();
     m_dev_name = m_info_service->characteristic(DeviceNameChar);
+    valid = valid && m_dev_name.isValid();
     if (!m_dev_name.isValid())
     {
         qWarning() << "DeviceHandler: device name characteristic is invalid";
         emit device_characteristic_error();
-        return false;
     }
 
     qDebug() << "DeviceHandler: find MAC address characteristic"
              << uuid_to_string(DeviceMacChar).c_str();
     m_dev_mac = m_info_service->characteristic(DeviceMacChar);
+    valid = valid && m_dev_mac.isValid();
     if (!m_dev_mac.isValid())
     {
         qWarning() << "DeviceHandler: MAC address characteristic is invalid";
         emit device_characteristic_error();
-        return false;
     }
 
-    return true;
+    if (valid)
+        emit service_discovered(DeviceInfoService);
 }
 
-bool DeviceHandler::add_network_characteristics()
+void DeviceHandler::add_network_characteristics()
 {
+    bool valid = true;
+
     qDebug() << "DeviceHandler: find network SSID characteristic"
              << uuid_to_string(NetworkSSIDChar).c_str();
     m_nwk_ssid = m_network_service->characteristic(NetworkSSIDChar);
+    valid = valid && m_nwk_ssid.isValid();
     if (!m_nwk_ssid.isValid())
     {
         qWarning() << "DeviceHandler: network SSID characteristic is invalid";
         emit device_characteristic_error();
-        return false;
     }
 
     qDebug() << "DeviceHandler: find network password characteristic"
              << uuid_to_string(NetworkPasswordChar).c_str();
     m_nwk_pass = m_network_service->characteristic(NetworkPasswordChar);
+    valid = valid && m_nwk_pass.isValid();
     if (!m_nwk_pass.isValid())
     {
         qWarning() << "DeviceHandler: network password characteristic is invalid";
         emit device_characteristic_error();
-        return false;
     }
 
-    return true;
+    if (valid)
+        emit service_discovered(DeviceNetworkService);
 }
 
 std::string DeviceHandler::read_device_mac()

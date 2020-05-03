@@ -26,9 +26,8 @@ private:
     void service_scan_done();
     void service_state_changed(const QBluetoothUuid&, QLowEnergyService::ServiceState);
     void service_error(const QBluetoothUuid&, QLowEnergyService::ServiceError);
-    void add_characteristics();
-    bool add_info_characteristics();
-    bool add_network_characteristics();
+    void add_info_characteristics();
+    void add_network_characteristics();
 
 signals:
     void device_found();
@@ -41,6 +40,8 @@ private:
 
     QLowEnergyService*    m_info_service    = nullptr;
     QLowEnergyService*    m_network_service = nullptr;
+    bool m_info_service_done    = false;
+    bool m_network_service_done = false;
 
     QLowEnergyCharacteristic m_dev_mac;
     QLowEnergyCharacteristic m_dev_name;
