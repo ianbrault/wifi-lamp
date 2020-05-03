@@ -50,6 +50,9 @@ void DeviceNetworkView::set_network_ssid(std::string&& ssid)
 
 void DeviceNetworkView::set_network_password(std::string&& password)
 {
-    m_network_password->setText(
-        QString("<b>Password:</b> %1").arg(password.c_str()));
+    QString redacted;
+    for (size_t i = 0; i < password.length(); i++)
+        redacted.append("\u2022");
+
+    m_network_password->setText(QString("<b>Password:</b> %1").arg(redacted));
 }
