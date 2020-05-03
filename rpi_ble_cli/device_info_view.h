@@ -21,6 +21,10 @@ private:
     void set_name(std::string&&);
     void set_mac(std::string&&);
 
+signals:
+    void load_device();
+    void edit_device_info();
+
 private:
     QPixmap m_connected;
     QPixmap m_disconnected;

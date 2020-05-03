@@ -42,6 +42,11 @@ DeviceInfoView::DeviceInfoView(QWidget* parent)
     auto connect_button = new ClickableLabel();
     connect_button->setAlignment(Qt::AlignCenter);
     connect_button->setPixmap(get_pixmap(":/load.svg", 36));
+    connect(connect_button, &ClickableLabel::clicked, [this]() {
+        if (m_connection_icon->pixmap() == &m_disconnected)
+            emit load_device();
+        // TODO: set up button to trigger edit device info
+    });
 
     layout->addSpacing(4);
     layout->addWidget(m_connection_icon);

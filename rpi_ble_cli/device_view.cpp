@@ -112,6 +112,10 @@ void DeviceView::setup_layout()
     m_device_pair    = new DevicePairView();
     m_device_network = new DeviceNetworkView();
 
+    connect(m_device_info, &DeviceInfoView::load_device, [this]() {
+        search_for_device();
+    });
+
     // initialize device control view
     m_device_on_off = new ClickableLabel();
     m_device_on_off->setAlignment(Qt::AlignCenter);
