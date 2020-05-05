@@ -21,6 +21,9 @@
 #include "device_info.hpp"
 #include "uuid.hpp"
 
+const auto read_only  = QLowEnergyCharacteristic::Read;
+const auto read_write = QLowEnergyCharacteristic::Read | QLowEnergyCharacteristic::Write;
+
 static QLowEnergyServiceData device_info_service;
 static QLowEnergyServiceData device_network_service;
 
@@ -55,8 +58,7 @@ static void define_device_info_service(const DeviceInfo& dev_info)
     dev_name_char.setUuid(DeviceNameChar);
     dev_name_char.setValue(QByteArray::fromStdString(dev_info.name()));
     dev_name_char.setValueLength(0, 64);
-    // TODO: should be writable as well
-    dev_name_char.setProperties(QLowEnergyCharacteristic::Read);
+    dev_name_char.setProperties(read_write);
 
     if (!dev_name_char.isValid())
         qWarning() << "Device name characteristic is invalid";
@@ -68,7 +70,7 @@ static void define_device_info_service(const DeviceInfo& dev_info)
     dev_mac_char.setUuid(DeviceMacChar);
     dev_mac_char.setValue(dev_info.mac_bytes());
     dev_mac_char.setValueLength(6, 6);
-    dev_mac_char.setProperties(QLowEnergyCharacteristic::Read);
+    dev_mac_char.setProperties(read_only);
 
     if (!dev_mac_char.isValid())
         qWarning() << "Device MAC characteristic is invalid";
@@ -98,8 +100,7 @@ static void define_device_network_service(const DeviceInfo& dev_info)
     nwk_ssid_char.setUuid(NetworkSSIDChar);
     nwk_ssid_char.setValue(ssid);
     nwk_ssid_char.setValueLength(0, 64);
-    // TODO: should be writable as well
-    nwk_ssid_char.setProperties(QLowEnergyCharacteristic::Read);
+    nwk_ssid_char.setProperties(read_write);
 
     if (!nwk_ssid_char.isValid())
         qWarning() << "Network SSID characteristic is invalid";
@@ -111,8 +112,7 @@ static void define_device_network_service(const DeviceInfo& dev_info)
     nwk_pass_char.setUuid(NetworkPasswordChar);
     nwk_pass_char.setValue(password);
     nwk_pass_char.setValueLength(0, 64);
-    // TODO: should be writable as well
-    nwk_pass_char.setProperties(QLowEnergyCharacteristic::Read);
+    nwk_pass_char.setProperties(read_write);
 
     if (!nwk_pass_char.isValid())
         qWarning() << "Network password characteristic is invalid";
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
 
     // initialize the BLE peripheral controller and start advertising
     qDebug() << "Initializing BLE peripheral controller & advertising data";
-    const QScopedPointer<QLowEnergyController> ble_ctrl(QLowEnergyController::createPeripheral());
+    QScopedPointer<QLowEnergyController> ble_ctrl(QLowEnergyController::createPeripheral());
 
     QScopedPointer<QLowEnergyService> info_service(ble_ctrl->addService(device_info_service));
     QScopedPointer<QLowEnergyService> nwk_service(ble_ctrl->addService(device_network_service));
@@ -167,6 +167,7 @@ int main(int argc, char *argv[])
         ble_ctrl.data(), &QLowEnergyController::stateChanged,
         &conn_handler, &ConnectionHandler::state_changed);
 
+    // set up reconnect handler
     auto reconnect = [&ble_ctrl, ad_data, &info_service, &nwk_service]() {
         info_service.reset(ble_ctrl->addService(device_info_service));
         nwk_service.reset(ble_ctrl->addService(device_network_service));
@@ -176,6 +177,19 @@ int main(int argc, char *argv[])
                 QLowEnergyAdvertisingParameters(), ad_data, ad_data);
     };
     QObject::connect(ble_ctrl.data(), &QLowEnergyController::disconnected, reconnect);
+
+    // set up service handlers to watch for characteristic writes
+    auto write_handler = [&device_info](const QLowEnergyCharacteristic& c, const QByteArray& v) {
+        auto vstr = v.toStdString();
+        if (c.uuid() == DeviceNameChar)
+            device_info.set_name(std::move(vstr));
+        else if (c.uuid() == NetworkSSIDChar)
+            device_info.set_network_ssid(std::move(vstr));
+        else if (c.uuid() == NetworkPasswordChar)
+            device_info.set_network_password(std::move(vstr));
+    };
+    QObject::connect(info_service.data(), &QLowEnergyService::characteristicWritten, write_handler);
+    QObject::connect(nwk_service.data(), &QLowEnergyService::characteristicWritten, write_handler);
 
     return a.exec();
 }
