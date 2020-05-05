@@ -9,27 +9,11 @@ class DeviceFinder;
 class DeviceHandler;
 class DeviceInfoView;
 class DeviceNetworkView;
+class DevicePairView;
 class QBluetoothDeviceInfo;
 class QLabel;
 class QPushButton;
 class Spinner;
-
-class DevicePairView : public QWidget
-{
-    Q_OBJECT
-
-public:
-    DevicePairView(QWidget* parent = nullptr);
-    virtual ~DevicePairView();
-
-private:
-    QPixmap m_pair_unpaired;
-    QPixmap m_pair_connected;
-    QPixmap m_pair_disconnected;
-
-    QLabel* m_pair_icon;
-    QLabel* m_pair_text;
-};
 
 class DeviceView : public QWidget
 {

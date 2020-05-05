@@ -8,6 +8,7 @@
 #include "device_handler.h"
 #include "device_info_view.h"
 #include "device_network_view.h"
+#include "device_pair_view.h"
 #include "device_view.h"
 #include "spinner.h"
 #include "utils.hpp"
@@ -17,43 +18,6 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QVBoxLayout>
-
-/*
-** DevicePairView
-*/
-
-DevicePairView::DevicePairView(QWidget* parent)
-    : QWidget(parent)
-{
-    m_pair_unpaired = get_pixmap(":/pair_unpaired.svg", 40);
-    m_pair_connected = get_pixmap(":/pair_connected.svg", 40);
-    m_pair_disconnected = get_pixmap(":/pair_disconnected.svg", 40);
-
-    /*
-    ** initialize layout
-    */
-
-    auto layout = new QHBoxLayout();
-    layout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-
-    m_pair_icon = new QLabel();
-    m_pair_icon->setPixmap(m_pair_unpaired);
-
-    m_pair_text = new QLabel("N/A");
-    m_pair_text->setStyleSheet("font-size: 22px");
-
-    layout->addWidget(m_pair_icon);
-    layout->addSpacing(12);
-    layout->addWidget(m_pair_text);
-
-    setLayout(layout);
-}
-
-DevicePairView::~DevicePairView() {}
-
-/*
-** DeviceView
-*/
 
 DeviceView::DeviceView(QWidget *parent)
     : QWidget(parent)

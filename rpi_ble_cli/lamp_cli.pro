@@ -15,6 +15,7 @@ SOURCES += \
     device_handler.cpp \
     device_info_view.cpp \
     device_network_view.cpp \
+    device_pair_view.cpp \
     device_view.cpp \
     line_edit.cpp \
     spinner.cpp \
@@ -28,6 +29,7 @@ HEADERS += \
     device_handler.h \
     device_info_view.h \
     device_network_view.h \
+    device_pair_view.h \
     device_view.h \
     line_edit.h \
     spinner.h \
