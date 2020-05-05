@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+class LineEdit;
+class QGridLayout;
 class QLabel;
 
 class DeviceNetworkView : public QWidget
@@ -16,10 +18,16 @@ public:
 public:
     void set_network_ssid(std::string&&);
     void set_network_password(std::string&&);
+    void set_edit_mode(bool);
 
 private:
+    QGridLayout* m_text_layout;
+
     QLabel* m_network_ssid;
     QLabel* m_network_password;
+
+    LineEdit* m_network_ssid_edit;
+    LineEdit* m_network_password_edit;
 };
 
 #endif // DEVICE_NETWORK_VIEW_H

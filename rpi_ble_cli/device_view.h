@@ -42,6 +42,7 @@ public:
 private:
     void setup_layout();
     void search_for_device();
+    void set_edit_mode(bool);
 
 private slots:
     void device_found();

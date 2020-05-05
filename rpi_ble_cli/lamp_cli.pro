@@ -16,6 +16,7 @@ SOURCES += \
     device_info_view.cpp \
     device_network_view.cpp \
     device_view.cpp \
+    line_edit.cpp \
     spinner.cpp \
     utils.cpp \
     main.cpp
@@ -28,6 +29,7 @@ HEADERS += \
     device_info_view.h \
     device_network_view.h \
     device_view.h \
+    line_edit.h \
     spinner.h \
     utils.hpp \
     uuid.hpp

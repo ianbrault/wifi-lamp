@@ -25,9 +25,9 @@
 DevicePairView::DevicePairView(QWidget* parent)
     : QWidget(parent)
 {
-    m_pair_unpaired = get_pixmap(":/pair_unpaired.svg", 45);
-    m_pair_connected = get_pixmap(":/pair_connected.svg", 45);
-    m_pair_disconnected = get_pixmap(":/pair_disconnected.svg", 45);
+    m_pair_unpaired = get_pixmap(":/pair_unpaired.svg", 40);
+    m_pair_connected = get_pixmap(":/pair_connected.svg", 40);
+    m_pair_disconnected = get_pixmap(":/pair_disconnected.svg", 40);
 
     /*
     ** initialize layout
@@ -40,7 +40,7 @@ DevicePairView::DevicePairView(QWidget* parent)
     m_pair_icon->setPixmap(m_pair_unpaired);
 
     m_pair_text = new QLabel("N/A");
-    m_pair_text->setStyleSheet("font-size: 24px");
+    m_pair_text->setStyleSheet("font-size: 22px");
 
     layout->addWidget(m_pair_icon);
     layout->addSpacing(12);
@@ -116,6 +116,10 @@ void DeviceView::setup_layout()
         search_for_device();
     });
 
+    connect(m_device_info, &DeviceInfoView::edit_device_info, [this](bool toggle) {
+        set_edit_mode(toggle);
+    });
+
     // initialize device control view
     m_device_on_off = new ClickableLabel();
     m_device_on_off->setAlignment(Qt::AlignCenter);
@@ -142,6 +146,7 @@ void DeviceView::search_for_device()
     m_searching = true;
 
     // show the spinner
+    m_spinner->setVisible(true);
     m_spinner->start();
     layout()->addWidget(m_spinner);
     layout()->itemAt(layout()->count() - 1)->setAlignment(Qt::AlignCenter);
@@ -156,6 +161,8 @@ void DeviceView::device_found()
     m_device_found = true;
 
     // remove the spinner
+    m_spinner->stop();
+    m_spinner->setVisible(false);
     layout()->removeWidget(m_spinner);
 
     // set device info
@@ -184,5 +191,12 @@ void DeviceView::device_not_found()
 
     // remove the spinner
     m_spinner->stop();
+    m_spinner->setVisible(false);
     layout()->removeWidget(m_spinner);
+}
+
+void DeviceView::set_edit_mode(bool toggle)
+{
+    m_device_info->set_edit_mode(toggle);
+    m_device_network->set_edit_mode(toggle);
 }
