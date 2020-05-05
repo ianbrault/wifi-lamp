@@ -18,6 +18,7 @@ public:
 public:
     void set_network_ssid(std::string&&);
     void set_network_password(std::string&&);
+    void set_network_password(QString&&);
     void set_edit_mode(bool);
 
 private:
@@ -28,6 +29,8 @@ private:
 
     LineEdit* m_network_ssid_edit;
     LineEdit* m_network_password_edit;
+
+    QString m_password;
 };
 
 #endif // DEVICE_NETWORK_VIEW_H

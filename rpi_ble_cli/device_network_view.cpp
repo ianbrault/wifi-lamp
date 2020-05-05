@@ -59,9 +59,16 @@ void DeviceNetworkView::set_network_ssid(std::string&& ssid)
 
 void DeviceNetworkView::set_network_password(std::string&& password)
 {
+    set_network_password(QString(password.c_str()));
+}
+
+void DeviceNetworkView::set_network_password(QString&& password)
+{
+    m_password = password;
+
     // password dot is UTF-8: \u2022
     QString redacted;
-    for (size_t i = 0; i < password.length(); i++)
+    for (auto i = 0; i < m_password.length(); i++)
         redacted.append("\u2022");
 
     m_network_password->setText(redacted);
@@ -78,7 +85,7 @@ void DeviceNetworkView::set_edit_mode(bool toggle)
         m_network_password->setVisible(false);
 
         m_network_ssid_edit->setText(m_network_ssid->text());
-        m_network_password_edit->setText(m_network_password->text());
+        m_network_password_edit->setText(m_password);
 
         m_network_ssid_edit->setVisible(true);
         m_network_password_edit->setVisible(true);
@@ -94,8 +101,8 @@ void DeviceNetworkView::set_edit_mode(bool toggle)
         m_network_ssid_edit->setVisible(false);
         m_network_password_edit->setVisible(false);
 
-        m_network_ssid->setText(new_ssid);
-        m_network_password->setText(new_password);
+        set_network_ssid(new_ssid.toStdString());
+        set_network_password(std::move(new_password));
 
         m_network_ssid->setVisible(true);
         m_network_password->setVisible(true);
