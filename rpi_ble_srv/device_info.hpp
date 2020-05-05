@@ -19,7 +19,6 @@ public:
     const std::string& network_password() const;
 
     void set_name(std::string&&);
-    void set_mac(QByteArray&&);
     void set_network_ssid(std::string&&);
     void set_network_password(std::string&&);
 
