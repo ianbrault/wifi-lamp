@@ -181,6 +181,7 @@ int main(int argc, char *argv[])
     // set up service handlers to watch for characteristic writes
     auto write_handler = [&device_info](const QLowEnergyCharacteristic& c, const QByteArray& v) {
         auto vstr = v.toStdString();
+        qDebug() << "characteristic write:" << vstr.c_str();
         if (c.uuid() == DeviceNameChar)
             device_info.set_name(std::move(vstr));
         else if (c.uuid() == NetworkSSIDChar)
