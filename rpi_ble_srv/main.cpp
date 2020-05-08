@@ -22,7 +22,7 @@
 #include "uuid.hpp"
 
 const auto read_only  = QLowEnergyCharacteristic::Read;
-const auto read_write = QLowEnergyCharacteristic::Read | QLowEnergyCharacteristic::Write;
+const auto read_write = QLowEnergyCharacteristic::Read | QLowEnergyCharacteristic::WriteNoResponse;
 
 static QLowEnergyServiceData device_info_service;
 static QLowEnergyServiceData device_network_service;
