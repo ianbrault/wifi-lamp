@@ -43,6 +43,13 @@ static std::string uuid_to_string(const QBluetoothUuid& uuid)
     return stream.str();
 }
 
+static QLowEnergyDescriptorData get_cccd()
+{
+    return QLowEnergyDescriptorData(
+        QBluetoothUuid::ClientCharacteristicConfiguration,
+        QByteArray(2, 0));
+}
+
 static void define_device_info_service(const DeviceInfo& dev_info)
 {
     qDebug() << "Creating device information service"
@@ -59,6 +66,7 @@ static void define_device_info_service(const DeviceInfo& dev_info)
     dev_name_char.setValue(QByteArray::fromStdString(dev_info.name()));
     dev_name_char.setValueLength(0, 64);
     dev_name_char.setProperties(read_write);
+    dev_name_char.addDescriptor(get_cccd());
 
     if (!dev_name_char.isValid())
         qWarning() << "Device name characteristic is invalid";
@@ -101,6 +109,7 @@ static void define_device_network_service(const DeviceInfo& dev_info)
     nwk_ssid_char.setValue(ssid);
     nwk_ssid_char.setValueLength(0, 64);
     nwk_ssid_char.setProperties(read_write);
+    nwk_ssid_char.addDescriptor(get_cccd());
 
     if (!nwk_ssid_char.isValid())
         qWarning() << "Network SSID characteristic is invalid";
@@ -113,6 +122,7 @@ static void define_device_network_service(const DeviceInfo& dev_info)
     nwk_pass_char.setValue(password);
     nwk_pass_char.setValueLength(0, 64);
     nwk_pass_char.setProperties(read_write);
+    nwk_pass_char.addDescriptor(get_cccd());
 
     if (!nwk_pass_char.isValid())
         qWarning() << "Network password characteristic is invalid";
