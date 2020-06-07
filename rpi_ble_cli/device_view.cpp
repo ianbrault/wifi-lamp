@@ -76,12 +76,26 @@ void DeviceView::setup_layout()
     m_device_pair    = new DevicePairView();
     m_device_network = new DeviceNetworkView();
 
+    // connect to DeviceInfoView signals
     connect(m_device_info, &DeviceInfoView::load_device, [this]() {
         search_for_device();
     });
-
     connect(m_device_info, &DeviceInfoView::edit_device_info, [this](bool toggle) {
         set_edit_mode(toggle);
+    });
+    connect(m_device_info, &DeviceInfoView::update_device_name, [this](QString name) {
+        m_handler->write_device_name(std::move(name));
+    });
+
+    // connect to DevicePairView signals
+    // TODO
+
+    // connect to DeviceNetworkView signals
+    connect(m_device_network, &DeviceNetworkView::update_network_ssid, [this](QString ssid) {
+        m_handler->write_network_ssid(std::move(ssid));
+    });
+    connect(m_device_network, &DeviceNetworkView::update_network_password, [this](QString pass) {
+        m_handler->write_network_password(std::move(pass));
     });
 
     // initialize device control view

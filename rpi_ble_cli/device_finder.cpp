@@ -35,26 +35,14 @@ void DeviceFinder::found_device(const QBluetoothDeviceInfo& dev)
 {
     if (dev.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration)
     {
-        qDebug() << "DeviceFinder: Low-energy device found";
         if (dev.name() == "LampSrv")
-        {
             m_device = dev;
-            m_handler->set_device(&m_device);
-            qDebug() << "DeviceFinder: Lamp device found";
-            // stop the scan once the device has been found
-            m_discovery_agent->stop();
-        }
     }
 }
 
 void DeviceFinder::scan_error(QBluetoothDeviceDiscoveryAgent::Error error)
 {
-    if (error == QBluetoothDeviceDiscoveryAgent::PoweredOffError)
-        qWarning() << "DeviceFinder: ERROR: Bluetooth adapter is powered off";
-    else if (error == QBluetoothDeviceDiscoveryAgent::InputOutputError)
-        qWarning() << "DeviceFinder: ERROR: device I/O resulted in an error";
-    else
-        qWarning() << "DeviceFinder: ERROR: an unknown error occurred";
+    qWarning() << "DeviceFinder ERROR:" << m_discovery_agent->errorString();
 }
 
 void DeviceFinder::scan_finished()
@@ -64,6 +52,11 @@ void DeviceFinder::scan_finished()
         qWarning() << "DeviceFinder: ERROR: Lamp device not found";
         emit device_not_found();
     }
+    else
+    {
+        qDebug() << "DeviceFinder: Lamp device found";
+        m_handler->set_device(&m_device);
+    }
 }
 
 void DeviceFinder::start_search()
@@ -71,9 +64,4 @@ void DeviceFinder::start_search()
     qDebug() << "Searching for Low Energy devices";
     m_handler->set_device(nullptr);
     m_discovery_agent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
-}
-
-const QBluetoothDeviceInfo& DeviceFinder::device() const
-{
-    return m_device;
 }

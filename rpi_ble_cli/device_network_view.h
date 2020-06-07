@@ -21,6 +21,10 @@ public:
     void set_network_password(QString&&);
     void set_edit_mode(bool);
 
+signals:
+    void update_network_ssid(QString);
+    void update_network_password(QString);
+
 private:
     QGridLayout* m_text_layout;
 

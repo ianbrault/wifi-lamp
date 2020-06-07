@@ -32,6 +32,7 @@ private:
 signals:
     void load_device();
     void edit_device_info(bool);
+    void update_device_name(QString);
 
 private:
     int m_state = UNCONNECTED;

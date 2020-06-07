@@ -93,8 +93,12 @@ void DeviceNetworkView::set_edit_mode(bool toggle)
     else
     {
         auto new_ssid = m_network_ssid_edit->text();
+        if (new_ssid != m_network_ssid->text())
+            emit update_network_ssid(new_ssid);
+
         auto new_password = m_network_password_edit->text();
-        // TODO: write updated text to characteristics
+        if (new_password != m_network_password->text())
+            emit update_network_password(new_password);
 
         m_text_layout->replaceWidget(m_network_ssid_edit, m_network_ssid);
 

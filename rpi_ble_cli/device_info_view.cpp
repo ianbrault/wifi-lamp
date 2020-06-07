@@ -98,7 +98,8 @@ void DeviceInfoView::set_edit_mode(bool toggle)
     else
     {
         auto new_name = m_device_name_edit->text();
-        // TODO: write updated text to characteristic
+        if (new_name != m_device_name->text())
+            emit update_device_name(new_name);
 
         m_text_layout->replaceWidget(m_device_name_edit, m_device_name);
         m_device_name_edit->setVisible(false);

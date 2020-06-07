@@ -16,7 +16,6 @@ public:
 
 public:
     void start_search();
-    const QBluetoothDeviceInfo& device() const;
 
 private slots:
     void found_device(const QBluetoothDeviceInfo&);

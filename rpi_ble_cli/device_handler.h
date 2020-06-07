@@ -17,10 +17,15 @@ public:
 
 public:
     void set_device(QBluetoothDeviceInfo*);
+
     std::string read_device_mac();
     std::string read_device_name();
     std::string read_network_ssid();
     std::string read_network_password();
+
+    void write_device_name(QString&&);
+    void write_network_ssid(QString&&);
+    void write_network_password(QString&&);
 
 private:
     void service_scan_done();

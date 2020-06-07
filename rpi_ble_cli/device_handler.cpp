@@ -98,7 +98,7 @@ void DeviceHandler::service_scan_done()
         m_network_service = nullptr;
     }
 
-    // when both services have been fully discovered, discover the characteristics
+    // when both services have been fully discovered, emit a signal
     auto service_done = [this](const QBluetoothUuid& svc_uuid) mutable {
         if (svc_uuid == DeviceInfoService)
             m_info_service_done = true;
@@ -167,57 +167,72 @@ void DeviceHandler::service_scan_done()
 
 void DeviceHandler::service_state_changed(const QBluetoothUuid& service_uuid, QLowEnergyService::ServiceState s)
 {
-    std::stringstream msg;
-    msg << "DeviceHandler: service " << uuid_to_string(service_uuid) << ": ";
+    auto log_state = [&](const char* msg) {
+        qDebug() << "DeviceHandler: service"
+                 << uuid_to_string(service_uuid).c_str()
+                 << msg;
+    };
+
     switch (s)
     {
         case QLowEnergyService::InvalidService:
-            msg << "service is invalid";
+            log_state("is invalid");
             break;
         case QLowEnergyService::DiscoveryRequired:
-            msg << "service discovery is required";
+            log_state("discovery is required");
             break;
         case QLowEnergyService::DiscoveringServices:
-            msg << "services are being discovered";
+            log_state("discovering services");
             break;
         case QLowEnergyService::ServiceDiscovered:
-            msg << "service discovered";
+            log_state("discovered");
+            /*
             (service_uuid == DeviceInfoService)
                 ? add_info_characteristics()
                 : add_network_characteristics();
+            */
+            emit service_discovered(service_uuid);
             break;
         case QLowEnergyService::LocalService:
-            msg << "service is associated with a controller object in the peripheral role";
+            log_state("is associated with a controller object in the peripheral role");
             break;
         default:
             break;
     }
-    qDebug() << msg.str().c_str();
 }
 
 void DeviceHandler::service_error(const QBluetoothUuid& service_uuid, QLowEnergyService::ServiceError e)
 {
-    std::stringstream msg;
-    msg << "DeviceHandler: service " << uuid_to_string(service_uuid);
+    auto log_error = [&](const char* msg) {
+        qWarning() << "DeviceHandler: service"
+                 << uuid_to_string(service_uuid).c_str()
+                 << msg;
+    };
+
     switch (e)
     {
         case QLowEnergyService::OperationError:
-            msg << "an operation was attempted while the service was not ready";
+            log_error("an operation was attempted while the service was not ready");
             break;
         case QLowEnergyService::CharacteristicReadError:
-            msg << "an attempt to read a characteristic value failed";
+            log_error("an attempt to read a characteristic value failed");
             break;
         case QLowEnergyService::CharacteristicWriteError:
-            msg << "an attempt to write a characteristic value failed";
+            log_error("an attempt to write a characteristic value failed");
+            break;
+        case QLowEnergyService::DescriptorReadError:
+            log_error("an attempt to read a descriptor value failed");
+            break;
+        case QLowEnergyService::DescriptorWriteError:
+            log_error("an attempt to write a descriptor value failed");
             break;
         case QLowEnergyService::UnknownError:
-            msg << "unknown service error";
+            log_error("unknown  error");
             break;
         case QLowEnergyService::NoError:
         default:
             break;
     }
-    qWarning() << msg.str().c_str();
 }
 
 void DeviceHandler::add_info_characteristics()
@@ -244,8 +259,10 @@ void DeviceHandler::add_info_characteristics()
         emit device_characteristic_error();
     }
 
+    /*
     if (valid)
         emit service_discovered(DeviceInfoService);
+    */
 }
 
 void DeviceHandler::add_network_characteristics()
@@ -272,20 +289,26 @@ void DeviceHandler::add_network_characteristics()
         emit device_characteristic_error();
     }
 
+    /*
     if (valid)
         emit service_discovered(DeviceNetworkService);
+    */
 }
 
 std::string DeviceHandler::read_device_mac()
 {
+    /*
     if (!m_dev_mac.isValid())
         return std::string();
+    */
+    auto c = m_info_service->characteristic(DeviceMacChar);
 
-    auto mac_bytes = m_dev_mac.value();
+    // auto mac_bytes = m_dev_mac.value();
+    auto mac_bytes = c.value();
 
     std::stringstream stream;
     stream << std::setfill('0') << std::setw(2);
-    for (auto i = 0; i < 6; i++)
+    for (auto i = 0; i < mac_bytes.length(); i++)
     {
         auto byte = ((int) mac_bytes.at(i)) & 0xff;
         stream << std::hex << byte;
@@ -298,27 +321,66 @@ std::string DeviceHandler::read_device_mac()
 
 std::string DeviceHandler::read_device_name()
 {
+    /*
     if (!m_dev_name.isValid())
         return std::string();
+    */
+    auto c = m_info_service->characteristic(DeviceNameChar);
 
-    auto name_bytes = m_dev_name.value();
-    return name_bytes.toStdString();
+    qDebug() << "DEBUG: device name properties:" << c.properties();
+
+    // auto name_bytes = m_dev_name.value();
+    // return name_bytes.toStdString();
+    return c.value().toStdString();
 }
 
 std::string DeviceHandler::read_network_ssid()
 {
+    /*
     if (!m_nwk_ssid.isValid())
         return std::string();
 
     auto ssid_bytes = m_nwk_ssid.value();
     return ssid_bytes.toStdString();
+    */
+    return "TEST NETWORK";
 }
 
 std::string DeviceHandler::read_network_password()
 {
+    /*
     if (!m_nwk_pass.isValid())
         return std::string();
 
     auto pass_bytes = m_nwk_pass.value();
     return pass_bytes.toStdString();
+    */
+    return "password123";
+}
+
+void DeviceHandler::write_device_name(QString&& name)
+{
+    if (!m_dev_name.isValid())
+        return;
+
+    m_info_service->writeCharacteristic(
+        m_dev_name, name.toUtf8(), QLowEnergyService::WriteWithoutResponse);
+}
+
+void DeviceHandler::write_network_ssid(QString&& ssid)
+{
+    if (!m_nwk_ssid.isValid())
+        return;
+
+    m_network_service->writeCharacteristic(
+        m_nwk_ssid, ssid.toUtf8(), QLowEnergyService::WriteWithoutResponse);
+}
+
+void DeviceHandler::write_network_password(QString&& password)
+{
+    if (!m_nwk_pass.isValid())
+        return;
+
+    m_network_service->writeCharacteristic(
+        m_nwk_pass, password.toUtf8(), QLowEnergyService::WriteWithoutResponse);
 }
