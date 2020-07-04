@@ -1,2 +1,0 @@
-#!/usr/bin/env bash
-rm -f *.o moc_* .qmake.stash Makefile rpi_ble_srv rpi_ble_srv.user

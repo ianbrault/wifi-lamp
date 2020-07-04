@@ -1,8 +1,1 @@
-rpi_ble_*/*.user
-rpi_ble_*/*.stash
-rpi_ble_*/*.o
-rpi_ble_*/moc_*.h
-rpi_ble_*/moc_*.cpp
-rpi_ble_*/Makefile
-
-rpi_ble_srv/rpi_ble_srv
+**/xcuserdata/
