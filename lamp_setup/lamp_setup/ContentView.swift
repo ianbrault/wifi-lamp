@@ -37,7 +37,8 @@ struct ContentView: View {
                 self.status = .Connected
             } else {
                 // device not found
-                self.showNotFoundAlert = true
+                // FIXME: self.showNotFoundAlert = true
+                self.status = .Connected
             }
         }
 
@@ -61,8 +62,7 @@ struct ContentView: View {
                 }
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .padding(.top, 32)
-        .padding(.bottom, 32)
+        .padding(.vertical, 32)
         .onAppear(perform: checkForDevice)
         .alert(isPresented: self.$showNotFoundAlert) {
             Alert(

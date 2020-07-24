@@ -7,9 +7,22 @@
 
 import SwiftUI
 
+enum Owner: String, CaseIterable, Identifiable {
+    case Arni
+    case Ian
+
+    var id: String { self.rawValue }
+}
+
 fileprivate struct NameScreen: View {
+    @State var selectedOwner = Owner.Arni
+
     var body: some View {
-        Text("NameScreen")
+        Picker("", selection: $selectedOwner) {
+            Text("Arni's Lamp").tag(Owner.Arni)
+            Text("Ian's Lamp").tag(Owner.Ian)
+        }
+        .pickerStyle(RadioGroupPickerStyle())
     }
 }
 
@@ -19,18 +32,11 @@ fileprivate struct WifiScreen: View {
     }
 }
 
-fileprivate struct PairScreen: View {
-    var body: some View {
-        Text("PairScreen")
-    }
-}
-
 struct SetupView: View {
 
     private enum Screen {
         case Name
         case Wifi
-        case Pair
     }
 
     @State private var screen: Screen = .Name
@@ -38,11 +44,29 @@ struct SetupView: View {
     private var title: String {
         switch screen {
         case .Name:
-            return "Set up your Lamp"
+            return "Whose lamp is this?"
         case .Wifi:
             return "Connect to WiFi"
-        case .Pair:
-            return "Pair with another Lamp"
+        }
+    }
+
+    private var buttonLabel: String {
+        switch screen {
+        case .Name:
+            return "Next"
+        case .Wifi:
+            return "Done"
+        }
+    }
+
+    private func onButton() {
+        switch screen {
+        case .Name:
+            // transition to the Wifi screen
+            screen = .Wifi
+        case .Wifi:
+            // TODO
+            break
         }
     }
 
@@ -58,10 +82,14 @@ struct SetupView: View {
             } else if screen == .Wifi {
                 WifiScreen()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if screen == .Pair {
-                PairScreen()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+
+            Button(action: onButton) {
+                Text(buttonLabel)
+                    .padding(.vertical, 4)
+                    .padding(.horizontal, 8)
+            }
+            .padding(.bottom, 16)
         }
     }
 }
