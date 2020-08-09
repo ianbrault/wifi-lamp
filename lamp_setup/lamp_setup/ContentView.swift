@@ -30,9 +30,6 @@ struct ContentView: View {
         task.executableURL = URL(fileURLWithPath: "/sbin/ping")
         task.arguments = ["-c", "1", hostname]
         task.terminationHandler = {(process) in
-            // let the spinner animation go for a bit
-            usleep(320_000)
-
             if process.terminationStatus == 0 {
                 self.status = .Connected
             } else {

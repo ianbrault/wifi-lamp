@@ -13,6 +13,7 @@
 		E3297251248D73CA008C6AF0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E3297250248D73CA008C6AF0 /* Preview Assets.xcassets */; };
 		E329725D248D9C5E008C6AF0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E329725C248D9C5E008C6AF0 /* Main.storyboard */; };
 		E3740A3A24AAEB1400B9EAB7 /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3740A3924AAEB1400B9EAB7 /* SetupView.swift */; };
+		E3AD526624CA7B730094D90E /* WifiScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AD526524CA7B730094D90E /* WifiScanner.swift */; };
 		E3E34FC32490911000896328 /* LogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3E34FC22490911000896328 /* LogoView.swift */; };
 		E3E34FC52490917100896328 /* SpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3E34FC42490917100896328 /* SpinnerView.swift */; };
 /* End PBXBuildFile section */
@@ -27,6 +28,7 @@
 		E3297256248D73CA008C6AF0 /* lamp_setup.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = lamp_setup.entitlements; sourceTree = "<group>"; };
 		E329725C248D9C5E008C6AF0 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = ../../../../.Trash/Main.storyboard; sourceTree = "<group>"; };
 		E3740A3924AAEB1400B9EAB7 /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
+		E3AD526524CA7B730094D90E /* WifiScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WifiScanner.swift; sourceTree = "<group>"; };
 		E3E34FC22490911000896328 /* LogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoView.swift; sourceTree = "<group>"; };
 		E3E34FC42490917100896328 /* SpinnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -66,6 +68,7 @@
 				E3E34FC22490911000896328 /* LogoView.swift */,
 				E3740A3924AAEB1400B9EAB7 /* SetupView.swift */,
 				E3E34FC42490917100896328 /* SpinnerView.swift */,
+				E3AD526524CA7B730094D90E /* WifiScanner.swift */,
 				E329724D248D73CA008C6AF0 /* Assets.xcassets */,
 				E329725C248D9C5E008C6AF0 /* Main.storyboard */,
 				E3297255248D73CA008C6AF0 /* Info.plist */,
@@ -159,6 +162,7 @@
 				E3E34FC52490917100896328 /* SpinnerView.swift in Sources */,
 				E3740A3A24AAEB1400B9EAB7 /* SetupView.swift in Sources */,
 				E329724A248D73C4008C6AF0 /* AppDelegate.swift in Sources */,
+				E3AD526624CA7B730094D90E /* WifiScanner.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
