@@ -41,9 +41,10 @@ $ sudo apt-get install -y qt5-default
 $ sudo apt-get install -y qtconnectivity5-dev
 ```
 
-### Configure Bluetooth (BlueZ)
+### Set up SSH keys
 
-Edit `/etc/systemd/system/bluetooth.target.wants/bluetooth.service` and set
-`ExecStart=/usr/lib/bluetooth/bluetoothd --noplugin=sap`.
+```bash
+$ ssh-copy-id -i keys/id_rsa_arni.pub pi@raspberrypi.local
+$ ssh-copy-id -i keys/id_rsa_ian.pub pi@raspberrypi.local
+```
 
-Edit `/lib/systemd/system/bthelper@.service` and add `ExecStartPre=/bin/sleep 2`
