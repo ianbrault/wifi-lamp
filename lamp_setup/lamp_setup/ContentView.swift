@@ -19,23 +19,19 @@ struct ContentView: View {
     @State private var status: Status = .Searching
     @State var showNotFoundAlert = false
 
-    private let username = "pi"
-    private let hostname = "raspberrypi.local"
-
     func checkForDevice() {
         status = .Searching
 
         // ping the Raspberry Pi
         let task = Process()
         task.executableURL = URL(fileURLWithPath: "/sbin/ping")
-        task.arguments = ["-c", "1", hostname]
+        task.arguments = ["-c", "1", "raspberrypi.local"]
         task.terminationHandler = {(process) in
             if process.terminationStatus == 0 {
                 self.status = .Connected
             } else {
                 // device not found
-                // FIXME: self.showNotFoundAlert = true
-                self.status = .Connected
+                self.showNotFoundAlert = true
             }
         }
 

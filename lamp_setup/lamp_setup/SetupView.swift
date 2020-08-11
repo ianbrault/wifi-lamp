@@ -28,12 +28,12 @@ enum Owner: String, CaseIterable, Identifiable {
 }
 
 fileprivate struct NameScreen: View {
+    @Binding var owner: Owner
     var onButton: () -> Void
-    @State var selectedOwner = Owner.Arni
 
     var body: some View {
         VStack {
-            Picker("", selection: $selectedOwner) {
+            Picker("", selection: $owner) {
                 Text("Arni's Lamp").tag(Owner.Arni)
                 Text("Ian's Lamp").tag(Owner.Ian)
             }
@@ -54,10 +54,45 @@ fileprivate struct WifiRow: View {
 }
 
 fileprivate struct WifiScreen: View {
-    var onButton: () -> Void
+    var owner: Owner
+
     @State private var networks: [String] = []
     @State private var selection = String?.none
     @State private var wifiPassword: String = ""
+
+    private func onButton() {
+        // Raspberry Pi SSH key path
+        let keyName = (owner == .Arni) ? "arni" : "ian"
+        let keyPath = Bundle.main.resourcePath! + "/id_rsa_" + keyName
+        print(keyPath)
+
+        // NOTE: SSH key permissions are wiped when copied into the bundle
+        let chmod_task = Process()
+        chmod_task.executableURL = URL(fileURLWithPath: "/bin/chmod")
+        chmod_task.arguments = ["600", keyPath]
+
+        do {
+            try chmod_task.run()
+        } catch {
+            // FIXME
+            print("CAUGHT SOMETHING: \(error)")
+            return
+        }
+
+        // modify the Raspberry Pi WPA supplicant file
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/usr/bin/ssh")
+        task.arguments = [
+            "-i", keyPath, "pi@raspberrypi.local", "touch", "/home/pi/sentinel"
+        ]
+
+        do {
+            try task.run()
+        } catch {
+            // FIXME
+            print("CAUGHT SOMETHING: \(error)")
+        }
+    }
 
     private func scanForNetworks() {
         DispatchQueue.global(qos: .background).async {
@@ -106,6 +141,7 @@ struct SetupView: View {
     }
 
     @State private var screen: Screen = .Name
+    @State private var owner: Owner = .Arni
 
     private var title: String {
         switch screen {
@@ -123,15 +159,13 @@ struct SetupView: View {
                 .padding(.top, 20)
 
             if screen == .Name {
-                NameScreen(onButton: {
+                NameScreen(owner: $owner, onButton: {
                     self.screen = .Wifi
                 })
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if screen == .Wifi {
-                WifiScreen(onButton: {
-
-                })
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                WifiScreen(owner: owner)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
     }
