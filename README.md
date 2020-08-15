@@ -32,19 +32,15 @@ $ sudo apt-get -y update
 $ sudo apt-get -y upgrade
 ```
 
-Install `git` and the required Qt libraries:
+Install `git`:
 
 ```bash
 $ sudo apt-get install -y git
-$ sudo apt-get install -y build-essential
-$ sudo apt-get install -y qt5-default
-$ sudo apt-get install -y qtconnectivity5-dev
 ```
 
 ### Set up SSH keys
 
 ```bash
-$ ssh-copy-id -i keys/id_rsa_arni.pub pi@raspberrypi.local
-$ ssh-copy-id -i keys/id_rsa_ian.pub pi@raspberrypi.local
+$ ssh-copy-id -i keys/id_rsa.pub pi@raspberrypi.local
 ```
 
