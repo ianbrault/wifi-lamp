@@ -25,7 +25,7 @@ RPI_USER = 'pi'
 RPI_PWD  = 'blueberry'
 
 KEY_DIR  = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'keys')
-PRIV_KEY = os.path.join(KEY_DIR, 'id_rsa')
+PRIV_KEY = os.path.join(KEY_DIR, 'rpi_id_key')
 
 AIRPORT_PATH = os.path.join(
     '/System', 'Library', 'PrivateFrameworks', 'Apple80211.framework',
