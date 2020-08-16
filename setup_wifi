@@ -216,4 +216,6 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        print('Ctrl+C received: exiting')
+        print('\nCtrl+C received: exiting')
+
+    boldprint('The program has completed; you may now close the window')
