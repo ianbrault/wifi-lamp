@@ -194,7 +194,15 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "fern",
+ "lamp_protocol",
  "log",
+ "tungstenite",
+]
+
+[[package]]
+name = "lamp_protocol"
+version = "0.1.0"
+dependencies = [
  "tungstenite",
 ]
 

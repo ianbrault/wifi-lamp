@@ -9,7 +9,9 @@ The main components of this repository are:
 which sends/receives messages to/from the paired device, and additionally
 controls the actual lamp LEDs on the device
 - `lamp_srv`: a central WebSocket server used to facilitate communication
-between devices
+between users and devices
+- `lamp_protocol`: a library containing common WebSocket utilities shared
+between `lamp_srv` and `lamp_cli`
 
 ## Initial Setup (for the developer)
 
@@ -47,9 +49,14 @@ Install `git`:
 $ sudo apt-get install -y git
 ```
 
+Install Rust:
+
+```bash
+$ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
 ### Set up SSH keys
 
 ```bash
 $ ssh-copy-id -i keys/id_rsa.pub pi@raspberrypi.local
 ```
-

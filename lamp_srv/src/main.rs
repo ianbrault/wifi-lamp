@@ -2,7 +2,6 @@
 ** src/main.rs
 */
 
-mod err;
 mod server;
 
 fn setup_logger() -> Result<(), fern::InitError> {

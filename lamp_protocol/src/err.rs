@@ -12,17 +12,31 @@ use tungstenite::handshake::server::NoCallback;
 type HandshakeError = tungstenite::HandshakeError<ServerHandshake<TcpStream, NoCallback>>;
 
 pub enum Error {
-    Handshake(HandshakeError),
+    HandshakeError(HandshakeError),
     IO(io::Error),
+    InvalidCommand(String),
     Tungstenite(tungstenite::Error),
 }
 
 impl Error {
+    pub fn invalid_command<S>(reason: S) -> Self
+    where S: Into<String>
+    {
+        Self::InvalidCommand(reason.into())
+    }
+
+    pub fn invalid_opcode(opcode: u8) -> Self {
+        Self::InvalidCommand(format!("invalid opcode {:#04x}", opcode))
+    }
+
     // is this an error which is caused by the client closing the connection?
     pub fn closed_connection(&self) -> bool {
         match self {
             Self::IO(e) => e.kind() == io::ErrorKind::ConnectionAborted,
-            Self::Tungstenite(e) => e == tungstenite::Error::ConnectionClosed,
+            Self::Tungstenite(e) => match e {
+                tungstenite::Error::ConnectionClosed => true,
+                _ => false,
+            },
             _ => false,
         }
     }
@@ -30,7 +44,7 @@ impl Error {
 
 impl From<HandshakeError> for Error {
     fn from(err: HandshakeError) -> Self {
-        Self::Handshake(err)
+        Self::HandshakeError(err)
     }
 }
 
@@ -49,8 +63,9 @@ impl From<tungstenite::Error> for Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::HandshakeError(e) => write!(f, "{}", e),
             Self::IO(e) => write!(f, "{}", e),
-            Self::Handshake(e) => write!(f, "{}", e),
+            Self::InvalidCommand(e) => write!(f, "{}", e),
             Self::Tungstenite(e) => write!(f, "{}", e),
         }
     }

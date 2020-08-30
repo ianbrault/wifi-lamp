@@ -2,8 +2,9 @@
 ** src/client.rs
 */
 
+use lamp_protocol::Error;
 use log::{debug, error, info};
-use tungstenite::{connect, Error, Message, WebSocket};
+use tungstenite::{connect, Message, WebSocket};
 use tungstenite::client::AutoStream;
 
 fn handle_connection(mut websocket: WebSocket<AutoStream>) -> Result<(), Error> {
@@ -28,15 +29,10 @@ pub fn run() {
         Ok((websocket, _)) => {
             info!("connected to server successfully");
             if let Err(err) = handle_connection(websocket) {
-                match err {
-                    // connection closed normally
-                    Error::ConnectionClosed => {
-                        info!("connection closed");
-                    },
-                    // off-nominal error, log and terminate
-                    _ => {
-                        error!("error handling connection: {}", err);
-                    }
+                if err.closed_connection() {
+                    info!("connection closed");
+                } else {
+                    error!("error handling connection: {}", err);
                 }
             }
         },

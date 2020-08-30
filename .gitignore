@@ -1,3 +1,5 @@
 **.vscode
 **target
 *.log
+
+lamp_protocol/Cargo.lock

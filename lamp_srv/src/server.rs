@@ -6,54 +6,9 @@ use std::io;
 use std::net::{TcpListener, TcpStream};
 use std::thread;
 
+use lamp_protocol::Error;
 use log::{debug, error, info};
 use tungstenite::{accept, WebSocket};
-
-use crate::err::Error;
-
-/*
-enum ClientType {
-    Device,
-    User,
-}
-
-impl ClientType {
-    fn raw_value(&self) -> u8 {
-        match self {
-            Self::Device => 0x0,
-            Self::User   => 0x1,
-        }
-    }
-}
-
-enum Owner {
-    Arni,
-    Ian,
-}
-
-impl Owner {
-    fn raw_value(&self) -> u8 {
-        match self {
-            Self::Arni => 0x10,
-            Self::Ian  => 0x11,
-        }
-    }
-}
-
-enum Command {
-    DeclareClientType { client_type: ClientType, owner: Owner },
-    DeclareClientTypeAck,
-}
-
-impl Command {
-    fn raw_value(&self) -> u8 {
-        match self {
-            Self::DeclareClient    => 0x00,
-            Self::DeclareClientAck => 0x70,
-        }
-    }
-}
-*/
 
 fn handle_connection(mut websocket: WebSocket<TcpStream>) -> Result<(), Error> {
     // initial prototype: simple echo server
