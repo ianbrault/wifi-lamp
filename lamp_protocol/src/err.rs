@@ -15,6 +15,7 @@ pub enum Error {
     HandshakeError(HandshakeError),
     IO(io::Error),
     InvalidCommand(String),
+    Protocol(String),
     Tungstenite(tungstenite::Error),
 }
 
@@ -27,6 +28,12 @@ impl Error {
 
     pub fn invalid_opcode(opcode: u8) -> Self {
         Self::InvalidCommand(format!("invalid opcode {:#04x}", opcode))
+    }
+
+    pub fn protocol_error<S>(reason: S) -> Self
+    where S: Into<String>
+    {
+        Self::Protocol(reason.into())
     }
 
     // is this an error which is caused by the client closing the connection?
@@ -66,6 +73,7 @@ impl fmt::Display for Error {
             Self::HandshakeError(e) => write!(f, "{}", e),
             Self::IO(e) => write!(f, "{}", e),
             Self::InvalidCommand(e) => write!(f, "{}", e),
+            Self::Protocol(e) => write!(f, "{}", e),
             Self::Tungstenite(e) => write!(f, "{}", e),
         }
     }

@@ -1,0 +1,4 @@
+@startuml
+lamp_cli -> lamp_srv: DeclareClientType(Device,Ian)
+lamp_srv -> lamp_cli: DeclareClientTypeAck
+@enduml

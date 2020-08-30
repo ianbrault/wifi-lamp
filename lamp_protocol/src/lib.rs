@@ -6,10 +6,24 @@ pub mod err;
 pub use err::Error;
 
 use std::convert::TryFrom;
+use std::fmt;
 
 use tungstenite::Message;
 
-enum Command {
+// helper function to print binary messages as hexadecimal bytes
+pub fn message_as_hex(message: &Message) -> String {
+    if let Message::Binary(bytes) = message {
+        bytes.iter()
+            .map(|b| format!("{:02x}", b))
+            .collect::<Vec<String>>()
+            .join(" ")
+    } else {
+        // only binary messages are supported, but fail silently
+        String::new()
+    }
+}
+
+pub enum Command {
     DeclareClientType(ClientType, Owner),
     DeclareClientTypeAck,
 }
@@ -21,8 +35,15 @@ impl Command {
 
     fn opcode(&self) -> u8 {
         match self {
-            Self::DeclareClientType(_, _) => Self::OP_DECL_CLI_TYPE,
-            Self::DeclareClientTypeAck    => Self::OP_DECL_CLI_TYPE_ACK,
+            Self::DeclareClientType(_,_) => Self::OP_DECL_CLI_TYPE,
+            Self::DeclareClientTypeAck   => Self::OP_DECL_CLI_TYPE_ACK,
+        }
+    }
+
+    pub fn name(&self) -> &'static str {
+        match self {
+            Self::DeclareClientType(_,_) => "DeclareClientType",
+            Self::DeclareClientTypeAck   => "DeclareClientTypeAck",
         }
     }
 
@@ -106,7 +127,7 @@ impl TryFrom<Message> for Command {
     }
 }
 
-enum ClientType {
+pub enum ClientType {
     Device,
     User,
 }
@@ -132,7 +153,7 @@ impl TryFrom<u8> for ClientType {
     }
 }
 
-enum Owner {
+pub enum Owner {
     Arni,
     Ian,
 }
@@ -154,6 +175,15 @@ impl TryFrom<u8> for Owner {
             0x30 => Ok(Self::Arni),
             0x31 => Ok(Self::Ian),
             _ => Err(Self::Error::invalid_command(format!("invalid owner {:#04x}", byte)))
+        }
+    }
+}
+
+impl fmt::Display for Owner {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Arni => write!(f, "Arni"),
+            Self::Ian => write!(f, "Ian"),
         }
     }
 }

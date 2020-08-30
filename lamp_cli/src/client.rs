@@ -2,22 +2,24 @@
 ** src/client.rs
 */
 
-use lamp_protocol::Error;
+use lamp_protocol::{message_as_hex, ClientType, Command, Error, Owner};
 use log::{debug, error, info};
-use tungstenite::{connect, Message, WebSocket};
-use tungstenite::client::AutoStream;
+use tungstenite::connect;
 
-fn handle_connection(mut websocket: WebSocket<AutoStream>) -> Result<(), Error> {
-    // initial prototype: simple echo server
+type WebSocket = tungstenite::WebSocket<tungstenite::client::AutoStream>;
+
+fn handle_connection(mut websocket: WebSocket) -> Result<(), Error> {
+    // TODO: this should be fetched from the environment
+    let owner = Owner::Ian;
+    info!("sending DeclareClientType command for Device ({})", owner);
+    let message = Command::declare_client_type(ClientType::Device, owner);
+    debug!("sending message: {}", message_as_hex(&message));
+    websocket.write_message(message)?;
+
     loop {
-        // send a binary message to the server
-        let message = Message::Binary(vec![0xde, 0xad, 0xca, 0xfe]);
-        debug!("sending message: {:?}", message);
-        websocket.write_message(message)?;
-
-        // read server response
-        let message = websocket.read_message()?;
-        debug!("received message: {:?}", message);
+        // TODO
+        // read should trigger closing the connection
+        let _ = websocket.read_message()?;
     }
 }
 
