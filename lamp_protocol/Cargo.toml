@@ -5,4 +5,5 @@ authors = ["Ian Brault <ian@brault.dev>"]
 edition = "2018"
 
 [dependencies]
+log = "0.4"
 tungstenite = "0.11"

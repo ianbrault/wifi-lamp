@@ -7,8 +7,10 @@ pub use err::Error;
 
 use std::convert::TryFrom;
 use std::fmt;
+use std::io::{Read, Write};
 
-use tungstenite::Message;
+use log::debug;
+use tungstenite::{Message, WebSocket};
 
 // helper function to print binary messages as hexadecimal bytes
 pub fn message_as_hex(message: &Message) -> String {
@@ -23,20 +25,87 @@ pub fn message_as_hex(message: &Message) -> String {
     }
 }
 
+/*
+** convenience functions to read/write websockets
+*/
+
+pub fn ws_read<S>(websocket: &mut WebSocket<S>) -> Result<Message, Error>
+where S: Read + Write
+{
+    let message = websocket.read_message()?;
+    debug!("received message: {}", message_as_hex(&message));
+    Ok(message)
+}
+
+pub fn ws_write<S>(websocket: &mut WebSocket<S>, message: Message) -> Result<(), Error>
+where S: Read + Write
+{
+    debug!("sending message: {}", message_as_hex(&message));
+    websocket.write_message(message)?;
+    Ok(())
+}
+
+/*
+** protocol state machine
+*/
+
+#[derive(Clone, Debug)]
+pub enum State {
+    NotConnected,
+    ServerOffline,
+    Off,
+    OnWaiting,
+    OnPaired,
+}
+
+impl Into<u8> for State {
+    fn into(self) -> u8 {
+        match self {
+            Self::NotConnected  => 0x00,
+            Self::ServerOffline => 0x01,
+            Self::Off           => 0x02,
+            Self::OnWaiting     => 0x03,
+            Self::OnPaired      => 0x04,
+        }
+    }
+}
+
+impl TryFrom<u8> for State {
+    type Error = err::Error;
+
+    fn try_from(byte: u8) -> Result<Self, Self::Error> {
+        match byte {
+            0x00 => Ok(Self::NotConnected),
+            0x01 => Ok(Self::ServerOffline),
+            0x02 => Ok(Self::Off),
+            0x03 => Ok(Self::OnWaiting),
+            0x04 => Ok(Self::OnPaired),
+            _    => Err(Error::invalid_state(byte))
+        }
+    }
+}
+
+/*
+** protocol commands and associated structures
+*/
+
 pub enum Command {
     DeclareClientType(ClientType, Owner),
     DeclareClientTypeAck,
+    DeviceStateChanged(State),
 }
 
 impl Command {
     // opcode definitions
     const OP_DECL_CLI_TYPE: u8     = 0x10;
     const OP_DECL_CLI_TYPE_ACK: u8 = 0x11;
+    const OP_DEV_ST_CHANGED: u8    = 0x12;
 
     fn opcode(&self) -> u8 {
         match self {
             Self::DeclareClientType(_,_) => Self::OP_DECL_CLI_TYPE,
             Self::DeclareClientTypeAck   => Self::OP_DECL_CLI_TYPE_ACK,
+            Self::DeviceStateChanged(_)  => Self::OP_DEV_ST_CHANGED,
         }
     }
 
@@ -44,6 +113,7 @@ impl Command {
         match self {
             Self::DeclareClientType(_,_) => "DeclareClientType",
             Self::DeclareClientTypeAck   => "DeclareClientTypeAck",
+            Self::DeviceStateChanged(_)  => "DeviceStateChanged",
         }
     }
 
@@ -59,45 +129,62 @@ impl Command {
         Self::DeclareClientTypeAck.into()
     }
 
+    pub fn device_state_changed(state: State) -> Message {
+        Self::DeviceStateChanged(state).into()
+    }
+
     /*
     ** parse Command from raw bytes (from tungstenite::Message::Binary)
     */
 
-    fn try_parse_declare_client_type(rest: &[u8]) -> Result<Self, err::Error> {
+    fn try_parse_declare_client_type(rest: &[u8]) -> Result<Self, Error> {
         match rest {
-            [] => Err(err::Error::invalid_command(
-                format!(
-                    "incomplete DeclareClientType command ({:?}): missing client type, owner arguments",
-                    rest))),
-            [_] => Err(err::Error::invalid_command(
-                format!(
-                    "incomplete DeclareClientType command ({:?}): missing owner argument",
-                    rest))),
+            [] => Err(Error::invalid_command(
+                format!("incomplete DeclareClientType command ({:?}): missing client type, owner arguments",
+                        rest))),
+            [_] => Err(Error::invalid_command(
+                format!("incomplete DeclareClientType command ({:?}): missing owner argument",
+                        rest))),
             [b_client_type, b_owner] => {
                 let client_type = ClientType::try_from(*b_client_type)?;
                 let owner = Owner::try_from(*b_owner)?;
                 Ok(Self::DeclareClientType(client_type, owner))
             },
-            _ => Err(err::Error::invalid_command(
-                format!(
-                    "invalid DeclareClientType command ({:?}): too many arguments",
-                    rest)))
+            _ => Err(Error::invalid_command(
+                format!("invalid DeclareClientType command ({:?}): too many arguments",
+                        rest)))
         }
     }
 
-    fn try_parse_declare_client_type_ack(_rest: &[u8]) -> Result<Self, err::Error> {
+    fn try_parse_declare_client_type_ack(_rest: &[u8]) -> Result<Self, Error> {
         Ok(Self::DeclareClientTypeAck)
     }
 
-    fn try_parse_bytes(bytes: Vec<u8>) -> Result<Self, err::Error> {
+    fn try_parse_device_state_changed(rest: &[u8]) -> Result<Self, Error> {
+        match rest {
+            [] => Err(Error::invalid_command(
+                format!("incomplete DeviceStateChanged command ({:?}): missing state argument",
+                        rest))),
+            [b_state] => {
+                let state = State::try_from(*b_state)?;
+                Ok(Self::DeviceStateChanged(state))
+            },
+            _ => Err(Error::invalid_command(
+                format!("invalid DeviceStateChanged command ({:?}): too many arguments",
+                        rest)))
+        }
+    }
+
+    fn try_parse_bytes(bytes: Vec<u8>) -> Result<Self, Error> {
         if let [opcode, rest @ ..] = bytes.as_slice() {
             match *opcode {
                 Self::OP_DECL_CLI_TYPE => Self::try_parse_declare_client_type(rest),
                 Self::OP_DECL_CLI_TYPE_ACK => Self::try_parse_declare_client_type_ack(rest),
-                _ => Err(err::Error::invalid_opcode(*opcode)),
+                Self::OP_DEV_ST_CHANGED => Self::try_parse_device_state_changed(rest),
+                _ => Err(Error::invalid_opcode(*opcode)),
             }
         } else {
-            Err(err::Error::invalid_command("empty message"))
+            Err(Error::invalid_command("empty message"))
         }
     }
 }
@@ -106,8 +193,8 @@ impl Into<Message> for Command {
     fn into(self) -> Message {
         let opcode = self.opcode();
         let bytes = match self {
-            Self::DeclareClientType(client_type, owner) => vec![
-                opcode, client_type.into(), owner.into()],
+            Self::DeclareClientType(cli_type, owner) => vec![opcode, cli_type.into(), owner.into()],
+            Self::DeviceStateChanged(state) => vec![opcode, state.into()],
             _ => vec![opcode],
         };
         Message::Binary(bytes)
@@ -148,7 +235,7 @@ impl TryFrom<u8> for ClientType {
         match byte {
             0x20 => Ok(Self::Device),
             0x21 => Ok(Self::User),
-            _ => Err(Self::Error::invalid_command(format!("invalid client type {:#04x}", byte)))
+            _    => Err(Self::Error::invalid_command(format!("invalid client type {:#04x}", byte))),
         }
     }
 }
@@ -174,7 +261,7 @@ impl TryFrom<u8> for Owner {
         match byte {
             0x30 => Ok(Self::Arni),
             0x31 => Ok(Self::Ian),
-            _ => Err(Self::Error::invalid_command(format!("invalid owner {:#04x}", byte)))
+            _    => Err(Self::Error::invalid_command(format!("invalid owner {:#04x}", byte))),
         }
     }
 }

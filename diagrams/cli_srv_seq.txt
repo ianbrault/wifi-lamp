@@ -1,4 +1,8 @@
 @startuml
-lamp_cli -> lamp_srv: DeclareClientType(Device,Ian)
+lamp_cli -> lamp_srv: DeclareClientType(ClientType=Device, Owner=Ian)
 lamp_srv -> lamp_cli: DeclareClientTypeAck
+lamp_srv -> lamp_srv: initialize Ian DeviceState to Off
+loop until connection is terminated
+    lamp_srv -> lamp_cli: DeviceStateChanged(State=OnWaiting)
+end
 @enduml
