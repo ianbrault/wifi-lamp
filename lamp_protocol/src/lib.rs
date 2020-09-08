@@ -93,6 +93,8 @@ pub enum Command {
     DeclareClientType(ClientType, Owner),
     DeclareClientTypeAck,
     DeviceStateChanged(State),
+    PowerDeviceOff,
+    PowerDeviceOn,
 }
 
 impl Command {
@@ -100,12 +102,16 @@ impl Command {
     const OP_DECL_CLI_TYPE: u8     = 0x10;
     const OP_DECL_CLI_TYPE_ACK: u8 = 0x11;
     const OP_DEV_ST_CHANGED: u8    = 0x12;
+    const OP_PWR_DEV_OFF: u8       = 0x13;
+    const OP_PWR_DEV_ON: u8        = 0x14;
 
     fn opcode(&self) -> u8 {
         match self {
             Self::DeclareClientType(_,_) => Self::OP_DECL_CLI_TYPE,
             Self::DeclareClientTypeAck   => Self::OP_DECL_CLI_TYPE_ACK,
             Self::DeviceStateChanged(_)  => Self::OP_DEV_ST_CHANGED,
+            Self::PowerDeviceOff         => Self::OP_PWR_DEV_OFF,
+            Self::PowerDeviceOn          => Self::OP_PWR_DEV_ON,
         }
     }
 
@@ -114,6 +120,8 @@ impl Command {
             Self::DeclareClientType(_,_) => "DeclareClientType",
             Self::DeclareClientTypeAck   => "DeclareClientTypeAck",
             Self::DeviceStateChanged(_)  => "DeviceStateChanged",
+            Self::PowerDeviceOff         => "PowerDeviceOff",
+            Self::PowerDeviceOn          => "PowerDeviceOn",
         }
     }
 
@@ -156,10 +164,6 @@ impl Command {
         }
     }
 
-    fn try_parse_declare_client_type_ack(_rest: &[u8]) -> Result<Self, Error> {
-        Ok(Self::DeclareClientTypeAck)
-    }
-
     fn try_parse_device_state_changed(rest: &[u8]) -> Result<Self, Error> {
         match rest {
             [] => Err(Error::invalid_command(
@@ -179,8 +183,10 @@ impl Command {
         if let [opcode, rest @ ..] = bytes.as_slice() {
             match *opcode {
                 Self::OP_DECL_CLI_TYPE => Self::try_parse_declare_client_type(rest),
-                Self::OP_DECL_CLI_TYPE_ACK => Self::try_parse_declare_client_type_ack(rest),
+                Self::OP_DECL_CLI_TYPE_ACK => Ok(Self::DeclareClientTypeAck),
                 Self::OP_DEV_ST_CHANGED => Self::try_parse_device_state_changed(rest),
+                Self::OP_PWR_DEV_OFF => Ok(Self::PowerDeviceOff),
+                Self::OP_PWR_DEV_ON => Ok(Self::PowerDeviceOn),
                 _ => Err(Error::invalid_opcode(*opcode)),
             }
         } else {
