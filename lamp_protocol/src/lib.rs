@@ -58,6 +58,15 @@ pub enum State {
     OnPaired,
 }
 
+impl State {
+    pub fn is_on(&self) -> bool {
+        match self {
+            Self::OnWaiting | Self::OnPaired => true,
+            _ => false,
+        }
+    }
+}
+
 impl Into<u8> for State {
     fn into(self) -> u8 {
         match self {
@@ -122,6 +131,14 @@ impl Command {
             Self::DeviceStateChanged(_)  => "DeviceStateChanged",
             Self::PowerDeviceOff         => "PowerDeviceOff",
             Self::PowerDeviceOn          => "PowerDeviceOn",
+        }
+    }
+
+    // used to command devices
+    pub fn is_device_command(&self) -> bool {
+        match self {
+            Self::PowerDeviceOff | Self::PowerDeviceOn => true,
+            _ => false,
         }
     }
 
@@ -249,6 +266,15 @@ impl TryFrom<u8> for ClientType {
 pub enum Owner {
     Arni,
     Ian,
+}
+
+impl Owner {
+    pub fn partner(&self) -> Self {
+        match self {
+            Self::Arni => Self::Ian,
+            Self::Ian  => Self::Arni,
+        }
+    }
 }
 
 impl Into<u8> for Owner {

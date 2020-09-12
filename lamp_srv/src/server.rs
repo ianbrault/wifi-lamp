@@ -36,9 +36,37 @@ impl DeviceState {
     }
 
     fn update(&mut self, owner: &Owner, state: State) {
-        match owner {
-            Owner::Arni => self.arni = state,
-            Owner::Ian => self.ian = state,
+        let owner_state = match owner {
+            Owner::Arni => &mut self.arni,
+            Owner::Ian => &mut self.ian,
+        };
+        *owner_state = state;
+    }
+
+    fn power_device_on(&mut self, owner: &Owner) {
+        let partner = owner.partner();
+        let other_state = self.get(&partner);
+
+        if other_state.is_on() {
+            // both devices are now on and paired
+            self.update(&owner, State::OnPaired);
+            self.update(&partner, State::OnPaired);
+        } else {
+            // this device is on and waiting, no change to the partner
+            self.update(&owner, State::OnWaiting);
+        }
+    }
+
+    fn power_device_off(&mut self, owner: &Owner) {
+        let partner = owner.partner();
+        let other_state = self.get(&partner);
+
+        if other_state.is_on() {
+            self.update(owner, State::Off);
+            // the partner is now waiting
+            self.update(&partner, State::OnWaiting);
+        } else {
+            self.update(owner, State::Off);
         }
     }
 }
@@ -71,13 +99,40 @@ fn handle_device_connection(websocket: &mut WebSocket, state: SharedDeviceState,
     }
 }
 
-fn handle_user_connection(_websocket: &mut WebSocket, state: SharedDeviceState, owner: Owner)
+fn handle_user_connection(websocket: &mut WebSocket, state: SharedDeviceState, owner: Owner)
     -> Result<(), Error>
 {
     info!("User ({}) connected", owner);
-    let (_device_state, _guard, _cvar) = &*state;
+    let (device_state, _, cvar) = &*state;
 
-    Err(Error::protocol_error("interface incomplete, terminating"))
+    // enter event loop
+    loop {
+        // wait for a command from the user client
+        let message = ws_read(websocket)?;
+
+        let command = Command::try_from(message)?;
+        // must be a power on/off command
+        if command.is_device_command() {
+            // update device state
+            let mut state_guard = device_state.write().unwrap();
+            match command {
+                Command::PowerDeviceOn => {
+                    state_guard.power_device_on(&owner);
+                },
+                Command::PowerDeviceOff => {
+                    state_guard.power_device_off(&owner);
+                },
+                // unreachable due to command.is_device_command()
+                _ => panic!("unreachable"),
+            }
+
+            // notify connected devices
+            cvar.notify_all();
+        } else {
+            return Err(Error::unexpected_command(
+                "PowerDeviceOn or PowerDeviceOff", command.name()));
+        }
+    }
 }
 
 fn handle_connection(websocket: &mut WebSocket, state: SharedDeviceState) -> Result<(), Error> {
