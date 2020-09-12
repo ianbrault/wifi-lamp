@@ -5,13 +5,14 @@ Welcome! This guide details how to get your lamp up and running.
 The main components of this repository are:
 
 - `setup_wifi`: a script used to configure the WiFi connection on a device
-- `lamp_cli`: a program which runs on a device and acts as a WebSocket client
+- `lamp_dev_cli`: a program that runs on a device and acts as a WebSocket client
 which sends/receives messages to/from the paired device, and additionally
 controls the actual lamp LEDs on the device
 - `lamp_srv`: a central WebSocket server used to facilitate communication
 between users and devices
 - `lamp_protocol`: a library containing common WebSocket utilities shared
 between `lamp_srv` and `lamp_cli`
+- `dbg_usr_cli`: a command-line program that emulates user client functionality
 
 ## Initial Setup (for the developer)
 

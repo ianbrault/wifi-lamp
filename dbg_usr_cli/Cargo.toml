@@ -1,0 +1,14 @@
+[package]
+name = "dbg_usr_cli"
+version = "0.1.0"
+authors = ["Ian Brault <ian@brault.dev>"]
+edition = "2018"
+
+[dependencies]
+
+log = "0.4"
+fern = "0.5"
+tungstenite = "0.11"
+
+lamp_protocol = { path = "../lamp_protocol" }
+
