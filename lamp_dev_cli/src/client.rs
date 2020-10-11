@@ -10,9 +10,7 @@ use tungstenite::connect;
 
 type WebSocket = tungstenite::WebSocket<tungstenite::client::AutoStream>;
 
-fn handle_connection(mut websocket: WebSocket) -> Result<(), Error> {
-    // TODO: this should be fetched from the environment
-    let owner = Owner::Ian;
+fn handle_connection(mut websocket: WebSocket, owner: Owner) -> Result<(), Error> {
     info!("sending DeclareClientType command for Device ({})", owner);
     let message = Command::declare_client_type(ClientType::Device, owner);
     ws_write(&mut websocket, message)?;
@@ -44,14 +42,14 @@ fn handle_connection(mut websocket: WebSocket) -> Result<(), Error> {
     }
 }
 
-pub fn run() {
+pub fn run(owner: Owner) {
     let address = "ws://127.0.0.1:8182";
     info!("connecting to server at {}", address);
 
     match connect(address) {
         Ok((websocket, _)) => {
             info!("connected to server successfully");
-            if let Err(err) = handle_connection(websocket) {
+            if let Err(err) = handle_connection(websocket, owner) {
                 if err.closed_connection() {
                     info!("connection closed");
                 } else {
