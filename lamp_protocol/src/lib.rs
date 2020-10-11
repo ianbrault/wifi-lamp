@@ -8,9 +8,14 @@ pub use err::Error;
 use std::convert::TryFrom;
 use std::fmt;
 use std::io::{Read, Write};
+use std::sync::{Condvar, Mutex};
 
 use log::debug;
 use tungstenite::{Message, WebSocket};
+
+/*
+** TODO: better namespacing
+*/
 
 // helper function to print binary messages as hexadecimal bytes
 pub fn message_as_hex(message: &Message) -> String {
@@ -305,6 +310,30 @@ impl fmt::Display for Owner {
             Self::Arni => write!(f, "Arni"),
             Self::Ian => write!(f, "Ian"),
         }
+    }
+}
+
+/*
+** wraps the functionality of a Condvar used purely for notifications
+*/
+
+pub struct Notifier {
+    condvar: Condvar,
+    mutex: Mutex<()>,
+}
+
+impl Notifier {
+    pub fn new() -> Self {
+        Self { condvar: Condvar::new(), mutex: Mutex::new(()) }
+    }
+
+    pub fn wait(&self) {
+        let guard = self.mutex.lock().unwrap();
+        let _ = self.condvar.wait(guard).unwrap();
+    }
+
+    pub fn notify_all(&self) {
+        self.condvar.notify_all()
     }
 }
 

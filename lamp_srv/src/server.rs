@@ -5,14 +5,14 @@
 use std::convert::TryFrom;
 use std::io;
 use std::net::{TcpListener, TcpStream};
-use std::sync::{Arc, Condvar, Mutex, RwLock};
+use std::sync::{Arc, RwLock};
 use std::thread;
 
-use lamp_protocol::{ws_read, ws_write, ClientType, Command, Error, Owner, State};
+use lamp_protocol::{ws_read, ws_write, ClientType, Command, Error, Notifier, Owner, State};
 use log::{error, info};
 use tungstenite::accept;
 
-type SharedDeviceState = Arc<(RwLock<DeviceState>, Mutex<()>, Condvar)>;
+type SharedDeviceState = Arc<(RwLock<DeviceState>, Notifier)>;
 type WebSocket = tungstenite::WebSocket<TcpStream>;
 
 struct DeviceState {
@@ -72,13 +72,13 @@ impl DeviceState {
 }
 
 fn update_shared_state(shared_state: SharedDeviceState, owner: Owner, state: State, notify: bool) {
-    let (device_state, _, cvar) = &*shared_state;
+    let (device_state, notifier) = &*shared_state;
 
     let mut state_guard = device_state.write().unwrap();
     state_guard.update(owner, state);
 
     if notify {
-        cvar.notify_all();
+        notifier.notify_all();
     }
 }
 
@@ -91,12 +91,11 @@ fn handle_device_connection(websocket: &mut WebSocket, state: SharedDeviceState,
     // do not need to notify
     update_shared_state(state.clone(), owner, State::Off, false);
 
-    let (device_state, guard, cvar) = &*state;
+    let (device_state, notifier) = &*state;
     // enter event loop
     loop {
         // wait for an update to the device state by a user client
-        let cvar_guard = guard.lock().unwrap();
-        let _cvar_guard = cvar.wait(cvar_guard).unwrap();
+        notifier.wait();
 
         // read the new device state and push to the device
         let state_guard = device_state.read().unwrap();
@@ -112,7 +111,7 @@ fn handle_user_connection(websocket: &mut WebSocket, state: SharedDeviceState, o
     -> Result<(), Error>
 {
     info!("User ({}) connected", owner);
-    let (device_state, _, cvar) = &*state;
+    let (device_state, notifier) = &*state;
 
     // enter event loop
     loop {
@@ -132,7 +131,7 @@ fn handle_user_connection(websocket: &mut WebSocket, state: SharedDeviceState, o
             };
 
             // notify connected devices
-            cvar.notify_all();
+            notifier.notify_all();
         } else {
             return Err(Error::unexpected_command(
                 "PowerDeviceOn or PowerDeviceOff", command.name()));
@@ -176,8 +175,7 @@ fn accept_connections(listener: TcpListener) {
     // device state is shared betweeen connection threads
     let device_state = Arc::new((
         RwLock::new(DeviceState::new()),
-        Mutex::new(()),
-        Condvar::new()));
+        Notifier::new()));
 
     // accept incoming connections as websockets
     for stream in listener.incoming() {
