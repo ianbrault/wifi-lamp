@@ -28,14 +28,14 @@ impl DeviceState {
         }
     }
 
-    fn get(&self, owner: &Owner) -> &State {
+    fn get(&self, owner: Owner) -> &State {
         match owner {
             Owner::Arni => &self.arni,
             Owner::Ian => &self.ian,
         }
     }
 
-    fn update(&mut self, owner: &Owner, state: State) {
+    fn update(&mut self, owner: Owner, state: State) {
         let owner_state = match owner {
             Owner::Arni => &mut self.arni,
             Owner::Ian => &mut self.ian,
@@ -43,31 +43,42 @@ impl DeviceState {
         *owner_state = state;
     }
 
-    fn power_device_on(&mut self, owner: &Owner) {
+    fn power_device_on(&mut self, owner: Owner) {
         let partner = owner.partner();
-        let other_state = self.get(&partner);
+        let other_state = self.get(partner);
 
         if other_state.is_on() {
             // both devices are now on and paired
-            self.update(&owner, State::OnPaired);
-            self.update(&partner, State::OnPaired);
+            self.update(owner, State::OnPaired);
+            self.update(partner, State::OnPaired);
         } else {
             // this device is on and waiting, no change to the partner
-            self.update(&owner, State::OnWaiting);
+            self.update(owner, State::OnWaiting);
         }
     }
 
-    fn power_device_off(&mut self, owner: &Owner) {
+    fn power_device_off(&mut self, owner: Owner) {
         let partner = owner.partner();
-        let other_state = self.get(&partner);
+        let other_state = self.get(partner);
 
         if other_state.is_on() {
             self.update(owner, State::Off);
             // the partner is now waiting
-            self.update(&partner, State::OnWaiting);
+            self.update(partner, State::OnWaiting);
         } else {
             self.update(owner, State::Off);
         }
+    }
+}
+
+fn update_shared_state(shared_state: SharedDeviceState, owner: Owner, state: State, notify: bool) {
+    let (device_state, _, cvar) = &*shared_state;
+
+    let mut state_guard = device_state.write().unwrap();
+    state_guard.update(owner, state);
+
+    if notify {
+        cvar.notify_all();
     }
 }
 
@@ -75,14 +86,12 @@ fn handle_device_connection(websocket: &mut WebSocket, state: SharedDeviceState,
     -> Result<(), Error>
 {
     info!("Device ({}) connected", owner);
-    let (device_state, guard, cvar) = &*state;
 
     // set device initial state: powered off
     // do not need to notify
-    let mut state_guard = device_state.write().unwrap();
-    state_guard.update(&owner, State::Off);
-    drop(state_guard);
+    update_shared_state(state.clone(), owner, State::Off, false);
 
+    let (device_state, guard, cvar) = &*state;
     // enter event loop
     loop {
         // wait for an update to the device state by a user client
@@ -91,7 +100,7 @@ fn handle_device_connection(websocket: &mut WebSocket, state: SharedDeviceState,
 
         // read the new device state and push to the device
         let state_guard = device_state.read().unwrap();
-        let new_state = state_guard.get(&owner);
+        let new_state = state_guard.get(owner);
 
         info!("sending new state {:?} to Device ({})", new_state, owner);
         let command = Command::device_state_changed(new_state.clone());
@@ -116,15 +125,11 @@ fn handle_user_connection(websocket: &mut WebSocket, state: SharedDeviceState, o
             // update device state
             let mut state_guard = device_state.write().unwrap();
             match command {
-                Command::PowerDeviceOn => {
-                    state_guard.power_device_on(&owner);
-                },
-                Command::PowerDeviceOff => {
-                    state_guard.power_device_off(&owner);
-                },
+                Command::PowerDeviceOn  => state_guard.power_device_on(owner),
+                Command::PowerDeviceOff => state_guard.power_device_off(owner),
                 // unreachable due to command.is_device_command()
                 _ => panic!("unreachable"),
-            }
+            };
 
             // notify connected devices
             cvar.notify_all();
@@ -148,8 +153,13 @@ fn handle_connection(websocket: &mut WebSocket, state: SharedDeviceState) -> Res
 
         // pass off to individual client type handlers
         match client_type {
-            ClientType::Device => handle_device_connection(websocket, state, owner),
-            ClientType::User   => handle_user_connection(websocket, state, owner),
+            ClientType::User => handle_user_connection(websocket, state.clone(), owner),
+            // ensure that devices are reset to NotConnected when their connections are closed
+            ClientType::Device => {
+                let res = handle_device_connection(websocket, state.clone(), owner);
+                update_shared_state(state, owner, State::NotConnected, true);
+                res
+            },
         }
     } else {
         Err(Error::unexpected_command("DeclareClientType", command.name()))
@@ -185,7 +195,9 @@ fn accept_connections(listener: TcpListener) {
                             error!("error handling connection: {}", err);
                             // close websocket connection
                             info!("closing connection to client");
-                            websocket.close(None).unwrap();
+                            // we don't really care about the Result, since it
+                            // will fail if the connection is already closed
+                            websocket.close(None).unwrap_or(());
                         }
                     }
                 },

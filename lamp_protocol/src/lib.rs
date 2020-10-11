@@ -263,6 +263,7 @@ impl TryFrom<u8> for ClientType {
     }
 }
 
+#[derive(Clone, Copy)]
 pub enum Owner {
     Arni,
     Ian,
