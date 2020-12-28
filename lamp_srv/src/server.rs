@@ -82,9 +82,11 @@ fn update_shared_state(shared_state: SharedDeviceState, owner: Owner, state: Sta
     }
 }
 
-fn handle_device_connection(websocket: &mut WebSocket, state: SharedDeviceState, owner: Owner)
-    -> Result<(), Error>
-{
+fn handle_device_connection(
+    websocket: &mut WebSocket,
+    state: SharedDeviceState,
+    owner: Owner,
+) -> Result<(), Error> {
     info!("Device ({}) connected", owner);
 
     // set device initial state: powered off
@@ -107,9 +109,11 @@ fn handle_device_connection(websocket: &mut WebSocket, state: SharedDeviceState,
     }
 }
 
-fn handle_user_connection(websocket: &mut WebSocket, state: SharedDeviceState, owner: Owner)
-    -> Result<(), Error>
-{
+fn handle_user_connection(
+    websocket: &mut WebSocket,
+    state: SharedDeviceState,
+    owner: Owner,
+) -> Result<(), Error> {
     info!("User ({}) connected", owner);
     let (device_state, notifier) = &*state;
 
@@ -124,7 +128,7 @@ fn handle_user_connection(websocket: &mut WebSocket, state: SharedDeviceState, o
             // update device state
             let mut state_guard = device_state.write().unwrap();
             match command {
-                Command::PowerDeviceOn  => state_guard.power_device_on(owner),
+                Command::PowerDeviceOn => state_guard.power_device_on(owner),
                 Command::PowerDeviceOff => state_guard.power_device_off(owner),
                 // unreachable due to command.is_device_command()
                 _ => panic!("unreachable"),
@@ -134,7 +138,9 @@ fn handle_user_connection(websocket: &mut WebSocket, state: SharedDeviceState, o
             notifier.notify_all();
         } else {
             return Err(Error::unexpected_command(
-                "PowerDeviceOn or PowerDeviceOff", command.name()));
+                "PowerDeviceOn or PowerDeviceOff",
+                command.name(),
+            ));
         }
     }
 }
@@ -152,16 +158,19 @@ fn handle_connection(websocket: &mut WebSocket, state: SharedDeviceState) -> Res
 
         // pass off to individual client type handlers
         match client_type {
-            ClientType::User => handle_user_connection(websocket, state.clone(), owner),
+            ClientType::User => handle_user_connection(websocket, state, owner),
             // ensure that devices are reset to NotConnected when their connections are closed
             ClientType::Device => {
                 let res = handle_device_connection(websocket, state.clone(), owner);
                 update_shared_state(state, owner, State::NotConnected, true);
                 res
-            },
+            }
         }
     } else {
-        Err(Error::unexpected_command("DeclareClientType", command.name()))
+        Err(Error::unexpected_command(
+            "DeclareClientType",
+            command.name(),
+        ))
     }
 }
 
@@ -173,9 +182,7 @@ fn accept_stream(stream: Result<TcpStream, io::Error>) -> Result<WebSocket, Erro
 
 fn accept_connections(listener: TcpListener) {
     // device state is shared betweeen connection threads
-    let device_state = Arc::new((
-        RwLock::new(DeviceState::new()),
-        Notifier::new()));
+    let device_state = Arc::new((RwLock::new(DeviceState::new()), Notifier::new()));
 
     // accept incoming connections as websockets
     for stream in listener.incoming() {
@@ -198,7 +205,7 @@ fn accept_connections(listener: TcpListener) {
                             websocket.close(None).unwrap_or(());
                         }
                     }
-                },
+                }
                 // error accepting connection, log and terminate
                 Err(err) => {
                     error!("failed to accept incoming connection: {}", err);

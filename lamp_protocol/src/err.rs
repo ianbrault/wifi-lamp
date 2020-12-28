@@ -6,8 +6,8 @@ use std::fmt;
 use std::io;
 use std::net::TcpStream;
 
-use tungstenite::ServerHandshake;
 use tungstenite::handshake::server::NoCallback;
+use tungstenite::ServerHandshake;
 
 type HandshakeError = tungstenite::HandshakeError<ServerHandshake<TcpStream, NoCallback>>;
 
@@ -22,7 +22,8 @@ pub enum Error {
 
 impl Error {
     pub fn invalid_command<S>(reason: S) -> Self
-    where S: Into<String>
+    where
+        S: Into<String>,
     {
         Self::InvalidCommand(reason.into())
     }
@@ -36,18 +37,22 @@ impl Error {
     }
 
     pub fn protocol_error<S>(reason: S) -> Self
-    where S: Into<String>
+    where
+        S: Into<String>,
     {
         Self::Protocol(reason.into())
     }
 
     pub fn unexpected_command<S, T>(expected: S, found: T) -> Self
-    where S: Into<String>,
-          T: Into<String>
+    where
+        S: Into<String>,
+        T: Into<String>,
     {
-        Self::protocol_error(
-            format!("expected a {} command but received a {} command instead",
-                    expected.into(), found.into()))
+        Self::protocol_error(format!(
+            "expected a {} command but received a {} command instead",
+            expected.into(),
+            found.into()
+        ))
     }
 
     // is this an error which is caused by the client closing the connection?
