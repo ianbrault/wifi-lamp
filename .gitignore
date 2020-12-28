@@ -3,3 +3,11 @@
 *.log
 
 lamp_protocol/Cargo.lock
+
+xcuserdata/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+timeline.xctimeline
+playground.xcworkspace
