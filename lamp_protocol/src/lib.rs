@@ -68,10 +68,7 @@ pub enum State {
 
 impl State {
     pub fn is_on(&self) -> bool {
-        match self {
-            Self::OnWaiting | Self::OnPaired => true,
-            _ => false,
-        }
+        matches!(self, Self::OnWaiting | Self::OnPaired)
     }
 }
 
@@ -144,10 +141,7 @@ impl Command {
 
     // used to command devices
     pub fn is_device_command(&self) -> bool {
-        match self {
-            Self::PowerDeviceOff | Self::PowerDeviceOn => true,
-            _ => false,
-        }
+        matches!(self, Self::PowerDeviceOff | Self::PowerDeviceOn)
     }
 
     /*

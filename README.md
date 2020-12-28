@@ -4,17 +4,23 @@ Welcome! This guide details how to get your lamp up and running.
 
 The main components of this repository are:
 
-- `setup_wifi`: a script used to configure the WiFi connection on a device
-- `lamp_dev_cli`: a program that runs on a device and acts as a WebSocket client
-which sends/receives messages to/from the paired device, and additionally
-controls the actual lamp LEDs on the device
 - `lamp_srv`: a central WebSocket server used to facilitate communication
 between users and devices
+- `lamp_dev_cli`: a program that runs on a Raspberry Pi and acts as a WebSocket
+client that sends/receives messages to/from the paired device, and additionally
+controls the actual lamp hardware
+- `lamp_usr_cli`: an iOS application that acts as a WebSocket client that is
+used to turn the lamp on and off
 - `lamp_protocol`: a library containing common WebSocket utilities shared
 between `lamp_srv` and `lamp_cli`
+- `lamp_ios_lib`: an FFI extension of `lamp_protocol` that is cross-compiled to
+iOS architectures for use in the `lamp_usr_cli` application
 - `dbg_usr_cli`: a command-line program that emulates user client functionality
+- `setup_wifi`: a script used to configure the WiFi connection on a device
 
-## Initial Setup (for the developer)
+# Developer Setup
+
+## Raspberry Pi
 
 ### Set up the Raspberry Pi Zero to emulate Ethernet over USB
 
@@ -60,4 +66,16 @@ $ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 ```bash
 $ ssh-copy-id -i keys/id_rsa.pub pi@raspberrypi.local
+```
+
+## Building the iOS Client
+
+The iOS client uses the `lamp_protocol` library internally, which must be
+cross-compiled for the iOS architectures.
+
+Add the architecture to rustup, and install `cargo-lipo`:
+
+```bash
+$ rustup target add aarch64-apple-ios x86_64-apple-ios
+$ cargo install cargo-lipo
 ```

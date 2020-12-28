@@ -59,10 +59,7 @@ impl Error {
     pub fn closed_connection(&self) -> bool {
         match self {
             Self::IO(e) => e.kind() == io::ErrorKind::ConnectionAborted,
-            Self::Tungstenite(e) => match e {
-                tungstenite::Error::ConnectionClosed => true,
-                _ => false,
-            },
+            Self::Tungstenite(e) => matches!(e, tungstenite::Error::ConnectionClosed),
             _ => false,
         }
     }
