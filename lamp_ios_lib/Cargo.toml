@@ -5,6 +5,9 @@ authors = ["Ian Brault <ian@brault.dev>"]
 edition = "2018"
 publish = false
 
+[build-dependencies]
+cbindgen = "0.16.0"
+
 [dependencies]
 lamp_protocol = { path = "../lamp_protocol" }
 tungstenite = "0.11"

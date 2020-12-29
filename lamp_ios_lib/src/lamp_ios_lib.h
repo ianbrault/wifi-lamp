@@ -1,17 +1,18 @@
-/*
-** src/lamp_ios_lib.h
-*/
-
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 
-typedef struct web_socket websocket_t;
+typedef struct WebSocket_AutoStream {
+  void *inner;
+} WebSocket_AutoStream;
 
-const uint8_t USER_ARNI = 0x30;
-const uint8_t USER_IAN  = 0x31;
+struct WebSocket_AutoStream connect_to_lamp(const char *address);
 
-extern websocket_t* connect(const char*);
-extern bool declare_client_connection(websocket_t*, uint8_t);
-extern bool power_on(websocket_t*);
-extern bool power_off(websocket_t*);
-extern void free_websocket(websocket_t*);
+void disconnect_from_lamp(struct WebSocket_AutoStream socket);
+
+bool declare_client_connection(struct WebSocket_AutoStream socket, uint8_t owner);
+
+bool power_on(struct WebSocket_AutoStream socket);
+
+bool power_off(struct WebSocket_AutoStream socket);
