@@ -11,6 +11,8 @@
 		E310693D2599638000D01EC2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E310693C2599638000D01EC2 /* ContentView.swift */; };
 		E310693F2599638200D01EC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E310693E2599638200D01EC2 /* Assets.xcassets */; };
 		E31069422599638200D01EC2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E31069412599638200D01EC2 /* Preview Assets.xcassets */; };
+		E373E987259AD0E3003063BF /* liblampios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E373E986259AD07D003063BF /* liblampios.a */; };
+		E39804BE259AA8B10047B928 /* LampClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39804BD259AA8B10047B928 /* LampClient.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +22,9 @@
 		E310693E2599638200D01EC2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E31069412599638200D01EC2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E31069432599638200D01EC2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E373E986259AD07D003063BF /* liblampios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblampios.a; path = ../../lamp_ios_lib/target/universal/release/liblampios.a; sourceTree = "<group>"; };
+		E39804B4259A97920047B928 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
+		E39804BD259AA8B10047B928 /* LampClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LampClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -27,6 +32,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E373E987259AD0E3003063BF /* liblampios.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -36,8 +42,10 @@
 		E310692E2599638000D01EC2 = {
 			isa = PBXGroup;
 			children = (
+				E39804BD259AA8B10047B928 /* LampClient.swift */,
 				E31069392599638000D01EC2 /* Lamp Client */,
 				E31069382599638000D01EC2 /* Products */,
+				E39804B2259A976E0047B928 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -67,6 +75,15 @@
 				E31069412599638200D01EC2 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		E39804B2259A976E0047B928 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E373E986259AD07D003063BF /* liblampios.a */,
+				E39804B4259A97920047B928 /* libresolv.tbd */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -139,6 +156,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E310693D2599638000D01EC2 /* ContentView.swift in Sources */,
+				E39804BE259AA8B10047B928 /* LampClient.swift in Sources */,
 				E310693B2599638000D01EC2 /* Lamp_ClientApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -271,14 +289,17 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Lamp Client/Preview Content\"";
 				DEVELOPMENT_TEAM = ANZXS48535;
 				ENABLE_PREVIEWS = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../lamp_ios_lib/src";
 				INFOPLIST_FILE = "Lamp Client/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../../lamp_ios_lib/target/universal/release";
 				PRODUCT_BUNDLE_IDENTIFIER = "isft.Lamp-Client";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_DIR)/../../lamp_ios_lib/src/lamp_ios_lib.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -293,14 +314,17 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Lamp Client/Preview Content\"";
 				DEVELOPMENT_TEAM = ANZXS48535;
 				ENABLE_PREVIEWS = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../lamp_ios_lib/src";
 				INFOPLIST_FILE = "Lamp Client/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../../lamp_ios_lib/target/universal/release";
 				PRODUCT_BUNDLE_IDENTIFIER = "isft.Lamp-Client";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_DIR)/../../lamp_ios_lib/src/lamp_ios_lib.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
