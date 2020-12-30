@@ -11,6 +11,7 @@
 		E310693D2599638000D01EC2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E310693C2599638000D01EC2 /* ContentView.swift */; };
 		E310693F2599638200D01EC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E310693E2599638200D01EC2 /* Assets.xcassets */; };
 		E31069422599638200D01EC2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E31069412599638200D01EC2 /* Preview Assets.xcassets */; };
+		E3195E3C259C13D3004898F8 /* UserSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3195E3B259C13D3004898F8 /* UserSelectView.swift */; };
 		E373E987259AD0E3003063BF /* liblampios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E373E986259AD07D003063BF /* liblampios.a */; };
 		E39804BE259AA8B10047B928 /* LampClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39804BD259AA8B10047B928 /* LampClient.swift */; };
 /* End PBXBuildFile section */
@@ -22,6 +23,7 @@
 		E310693E2599638200D01EC2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E31069412599638200D01EC2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E31069432599638200D01EC2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E3195E3B259C13D3004898F8 /* UserSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSelectView.swift; sourceTree = "<group>"; };
 		E373E986259AD07D003063BF /* liblampios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblampios.a; path = ../../lamp_ios_lib/target/universal/release/liblampios.a; sourceTree = "<group>"; };
 		E39804B4259A97920047B928 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
 		E39804BD259AA8B10047B928 /* LampClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LampClient.swift; sourceTree = "<group>"; };
@@ -62,6 +64,7 @@
 			children = (
 				E310693A2599638000D01EC2 /* Lamp_ClientApp.swift */,
 				E310693C2599638000D01EC2 /* ContentView.swift */,
+				E3195E3B259C13D3004898F8 /* UserSelectView.swift */,
 				E310693E2599638200D01EC2 /* Assets.xcassets */,
 				E31069432599638200D01EC2 /* Info.plist */,
 				E31069402599638200D01EC2 /* Preview Content */,
@@ -156,6 +159,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E310693D2599638000D01EC2 /* ContentView.swift in Sources */,
+				E3195E3C259C13D3004898F8 /* UserSelectView.swift in Sources */,
 				E39804BE259AA8B10047B928 /* LampClient.swift in Sources */,
 				E310693B2599638000D01EC2 /* Lamp_ClientApp.swift in Sources */,
 			);
