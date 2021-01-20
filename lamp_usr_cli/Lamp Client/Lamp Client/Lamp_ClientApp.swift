@@ -22,7 +22,7 @@ struct Lamp_ClientApp: App {
             if lampUser == nil {
                 UserSelectView(setLampUser: setLampUser)
             } else {
-                ContentView()
+                ContentView(user: lampUser!)
             }
         }
     }

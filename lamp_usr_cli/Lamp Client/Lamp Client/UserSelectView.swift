@@ -25,7 +25,7 @@ struct UserSelectView: View {
     var body: some View {
         ZStack {
             // color should fill the entire screen
-            Color(.sRGB, red: 73 / 255, green: 89 / 255, blue: 154 / 255)
+            DarkPurple
                 .ignoresSafeArea()
 
             VStack {
