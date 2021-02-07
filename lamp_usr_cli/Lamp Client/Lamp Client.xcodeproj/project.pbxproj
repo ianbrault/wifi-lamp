@@ -14,6 +14,7 @@
 		E3195E3C259C13D3004898F8 /* UserSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3195E3B259C13D3004898F8 /* UserSelectView.swift */; };
 		E34A7A2D25AA815200D24231 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34A7A2C25AA815200D24231 /* Colors.swift */; };
 		E373E987259AD0E3003063BF /* liblampios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E373E986259AD07D003063BF /* liblampios.a */; };
+		E38C916625B8060B00FD95D3 /* LampButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38C916525B8060B00FD95D3 /* LampButton.swift */; };
 		E39804BE259AA8B10047B928 /* LampClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39804BD259AA8B10047B928 /* LampClient.swift */; };
 /* End PBXBuildFile section */
 
@@ -27,6 +28,7 @@
 		E3195E3B259C13D3004898F8 /* UserSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSelectView.swift; sourceTree = "<group>"; };
 		E34A7A2C25AA815200D24231 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		E373E986259AD07D003063BF /* liblampios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblampios.a; path = ../../lamp_ios_lib/target/universal/release/liblampios.a; sourceTree = "<group>"; };
+		E38C916525B8060B00FD95D3 /* LampButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LampButton.swift; sourceTree = "<group>"; };
 		E39804B4259A97920047B928 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
 		E39804BD259AA8B10047B928 /* LampClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LampClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -67,6 +69,7 @@
 				E310693A2599638000D01EC2 /* Lamp_ClientApp.swift */,
 				E34A7A2C25AA815200D24231 /* Colors.swift */,
 				E310693C2599638000D01EC2 /* ContentView.swift */,
+				E38C916525B8060B00FD95D3 /* LampButton.swift */,
 				E3195E3B259C13D3004898F8 /* UserSelectView.swift */,
 				E310693E2599638200D01EC2 /* Assets.xcassets */,
 				E31069432599638200D01EC2 /* Info.plist */,
@@ -162,6 +165,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E310693D2599638000D01EC2 /* ContentView.swift in Sources */,
+				E38C916625B8060B00FD95D3 /* LampButton.swift in Sources */,
 				E34A7A2D25AA815200D24231 /* Colors.swift in Sources */,
 				E3195E3C259C13D3004898F8 /* UserSelectView.swift in Sources */,
 				E39804BE259AA8B10047B928 /* LampClient.swift in Sources */,
