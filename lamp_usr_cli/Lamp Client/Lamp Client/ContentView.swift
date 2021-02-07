@@ -126,8 +126,16 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             // color should fill the entire screen
-            fillColor(state)
+            // show both colors but animate the opacity in and out
+            // note: no need to show .NotConnected, which is white
+            LightBlue
                 .ignoresSafeArea()
+                .opacity(state == .Off ? 1 : 0)
+                .animation(.easeOut(duration: 0.32))
+            LightGreen
+                .ignoresSafeArea()
+                .opacity(state == .OnWaiting || state == .OnPaired ? 1 : 0)
+                .animation(.easeOut(duration: 0.32))
 
             VStack {
                 Header(user, state)

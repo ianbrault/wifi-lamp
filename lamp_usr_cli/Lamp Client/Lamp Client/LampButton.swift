@@ -28,6 +28,8 @@ struct LampButton: View {
     var state: LampState
     var onTap: () -> Void
 
+    @State private var pressed = false
+
     init(_ state: LampState, onTap: @escaping () -> Void) {
         self.state = state
         self.onTap = onTap
@@ -58,9 +60,20 @@ struct LampButton: View {
                         .foregroundColor(strokeColor(state))
                 }
             }
-            .onTapGesture {
-                onTap()
-            }
+            .scaleEffect(pressed ? 0.95 : 1, anchor: .center)
+            .animation(.linear(duration: 0.1))
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged({ _ in
+                        // button pressed
+                        pressed = true
+                    })
+                    .onEnded({ _ in
+                        // button released
+                        pressed = false
+                        onTap()
+                    })
+            )
         }
     }
 }
