@@ -101,13 +101,41 @@ struct Footer: View {
     }
 }
 
+struct AlertItem: Identifiable {
+    var id = UUID()
+    var title: Text
+    var message: Text?
+    var dismissButton: Alert.Button?
+}
+
 struct ContentView: View {
     var user: String
+    var client = LampClient()
 
+    @State private var isConnectingToServer = true
     @State private var state: LampState = .NotConnected
+    @State private var alertItem: AlertItem?
+
+    func connectToServer() {
+        let success = client.open_connection(address: LampAddress, owner: user)
+        if success {
+            isConnectingToServer = false
+            // FIXME: wait for the current lamp state to be sent from the server
+            state = .Off
+        } else {
+            // display an alert and re-try (if commanded)
+            alertItem = AlertItem(
+                title: Text("Connection Failed"),
+                message: Text("Would you like to try again?"),
+                dismissButton: .default(Text("Retry")) {
+                    connectToServer()
+                }
+            )
+        }
+    }
 
     func buttonPressedDebug() {
-        // NOTE: debug implementation, just cycle through the states
+        // note: debug implementation, just cycle through the states
         switch state {
         case .NotConnected:
             state = .Off
@@ -119,8 +147,26 @@ struct ContentView: View {
     }
 
     func buttonPressed() {
-        // FIXME: add a real implementation
-        buttonPressedDebug()
+        // note: uncomment for a debug implementation
+        // return buttonPressedDebug()
+
+        switch state {
+        case .NotConnected:
+            // do nothing and wait for the lamp to connect to the server
+            return
+        case .Off:
+            // turn the lamp on
+            if client.turn_on() {
+                // FIXME: this should wait for confirmation from the server
+                state = .OnWaiting
+            }
+        case .OnWaiting, .OnPaired:
+            // turn the lamp off
+            if client.turn_off() {
+                // FIXME: this should wait for confirmation from the server
+                state = .Off
+            }
+        }
     }
 
     var body: some View {
@@ -138,14 +184,28 @@ struct ContentView: View {
                 .animation(.easeOut(duration: 0.32))
 
             VStack {
-                Header(user, state)
-
-                LampButton(state, onTap: buttonPressed)
-                    .padding(.horizontal, 64)
-
-                Footer(state)
+                if isConnectingToServer {
+                    ProgressView()
+                        .padding(.vertical, 12)
+                    Text("connecting to the server...")
+                        .font(.system(size: 14))
+                        .fontWeight(.light)
+                } else {
+                    Header(user, state)
+                    LampButton(state, onTap: buttonPressed)
+                        .padding(.horizontal, 64)
+                    Footer(state)
+                }
             }
             .padding(.vertical, 40)
+            .alert(item: $alertItem) { alertItem in
+                Alert(title: alertItem.title, message: alertItem.message, dismissButton: alertItem.dismissButton)
+            }
+        }
+        .onAppear {
+            DispatchQueue.main.async {
+                connectToServer()
+            }
         }
     }
 }
