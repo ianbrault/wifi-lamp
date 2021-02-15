@@ -1,0 +1,13 @@
+@startuml
+lamp_dev_cli -> lamp_srv: DeclareClientType(ClientType=Device, Owner=Ian)
+lamp_srv -> lamp_srv: initialize Ian DeviceState to Off
+lamp_srv -> lamp_dev_cli: DeclareClientTypeAck(State=Off)
+loop until connection is terminated
+    lamp_srv -> lamp_dev_cli: DeviceStateChanged(State=OnWaiting)
+    lamp_dev_cli -> lamp_dev_cli: handle state change
+    lamp_srv -> lamp_dev_cli: DeviceStateChanged(State=OnPaired)
+    lamp_dev_cli -> lamp_dev_cli: handle state change
+    lamp_srv -> lamp_dev_cli: DeviceStateChanged(State=Off)
+    lamp_dev_cli -> lamp_dev_cli: handle state change
+end
+@enduml

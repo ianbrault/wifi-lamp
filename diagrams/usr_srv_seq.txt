@@ -1,0 +1,12 @@
+@startuml
+lamp_usr_cli -> lamp_srv: DeclareClientType(ClientType=User, Owner=Ian)
+lamp_srv -> lamp_usr_cli: DeclareClientTypeAck(State=Off)
+loop until connection is terminated
+    lamp_usr_cli -> lamp_srv: PowerDeviceOn
+    lamp_srv -> lamp_srv: set Ian DeviceState to OnWaiting, notify device
+    lamp_srv -> lamp_usr_cli: PowerAck
+    lamp_usr_cli -> lamp_srv: PowerDeviceOff
+    lamp_srv -> lamp_srv: set Ian DeviceState to Off, notify device
+    lamp_srv -> lamp_usr_cli: PowerAck
+end
+@enduml
