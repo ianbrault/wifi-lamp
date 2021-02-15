@@ -10,8 +10,7 @@ import SwiftUI
 enum LampState {
     case NotConnected
     case Off
-    case OnWaiting
-    case OnPaired
+    case On
 }
 
 struct Header: View {
@@ -70,7 +69,7 @@ struct Footer: View {
             return "not connected"
         case .Off:
             return "powered off"
-        case .OnWaiting, .OnPaired:
+        case .On:
             return "powered on"
         }
     }
@@ -81,7 +80,7 @@ struct Footer: View {
             return "tap to connect to the device"
         case .Off:
             return "tap to power on"
-        case .OnWaiting, .OnPaired:
+        case .On:
             return "tap to power off"
         }
     }
@@ -140,8 +139,8 @@ struct ContentView: View {
         case .NotConnected:
             state = .Off
         case .Off:
-            state = .OnPaired
-        case .OnWaiting, .OnPaired:
+            state = .On
+        case .On:
             state = .NotConnected
         }
     }
@@ -157,13 +156,11 @@ struct ContentView: View {
         case .Off:
             // turn the lamp on
             if client.turn_on() {
-                // FIXME: this should wait for confirmation from the server
-                state = .OnWaiting
+                state = .On
             }
-        case .OnWaiting, .OnPaired:
+        case .On:
             // turn the lamp off
             if client.turn_off() {
-                // FIXME: this should wait for confirmation from the server
                 state = .Off
             }
         }
@@ -180,7 +177,7 @@ struct ContentView: View {
                 .animation(.easeOut(duration: 0.32))
             LightGreen
                 .ignoresSafeArea()
-                .opacity(state == .OnWaiting || state == .OnPaired ? 1 : 0)
+                .opacity(state == .On ? 1 : 0)
                 .animation(.easeOut(duration: 0.32))
 
             VStack {
